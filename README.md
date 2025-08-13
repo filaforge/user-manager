@@ -1,4 +1,37 @@
-# Filaforge System Monitor
+# Filaforge System Widget
+
+A Filament v4 dashboard widget plugin for real-time system monitoring, using a unique namespace to avoid collisions.
+
+## Requirements
+- PHP >= 8.1
+- Laravel 12 (illuminate/support ^12)
+- Filament ^4.0
+- symfony/process ^7.0
+
+## Installation
+- Install via Composer:
+  - In a consuming app: `composer require filaforge/system-widget`
+  - In this monorepo, the root app already maps `plugins/*` as path repositories.
+- The service provider is auto-discovered.
+
+## Register the plugin in your panel
+```php
+use Filaforge\SystemWidget\SystemWidgetPlugin;
+use Filament\Panel;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ...
+        ->plugin(SystemWidgetPlugin::make());
+}
+```
+
+## Usage
+After registration, the “System Monitor” widget appears on the dashboard.
+
+---
+Package: `filaforge/system-widget`# Filaforge System Monitor
 
 A Filament v4 dashboard widget for real-time server monitoring.
 

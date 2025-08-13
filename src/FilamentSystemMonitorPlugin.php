@@ -1,12 +1,12 @@
 <?php
 
-namespace Filaforge\SystemMonitor;
+namespace Filaforge\SystemWidget;
 
-use Filaforge\SystemMonitor\Filament\Widgets\SystemMonitorWidget;
+use Filaforge\SystemWidget\Filament\Widgets\SystemMonitorWidget;
 use Filament\Contracts\Plugin as PluginContract;
 use Filament\Panel;
 
-class SystemMonitorPlugin implements PluginContract
+class SystemWidgetPlugin implements PluginContract
 {
     public static function make(): static
     {
@@ -15,7 +15,7 @@ class SystemMonitorPlugin implements PluginContract
 
     public function getId(): string
     {
-        return 'system-monitor';
+    return 'system-widget';
     }
 
     public function register(Panel $panel): void

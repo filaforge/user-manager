@@ -1,14 +1,14 @@
 <?php
 
-namespace Filaforge\SystemMonitor\Filament\Widgets;
+namespace Filaforge\SystemWidget\Filament\Widgets;
 
 use Filament\Widgets\Widget;
-use Filaforge\SystemMonitor\Services\SystemMetricsProvider;
+use Filaforge\SystemWidget\Services\SystemMetricsProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 class SystemMonitorWidget extends Widget
 {
-    protected string $view = 'system-monitor::widgets.system-monitor';
+    protected string $view = 'system-widget::widgets.system-monitor';
 
     /** @var array<string, mixed> */
     public array $metrics = [];
@@ -32,7 +32,7 @@ class SystemMonitorWidget extends Widget
             return false;
         }
 
-        $allowed = (array) config('filaforge-system-monitor.allow_roles', []);
+    $allowed = (array) config('system-widget.allow_roles', []);
         if (empty($allowed)) {
             return true;
         }
@@ -47,6 +47,6 @@ class SystemMonitorWidget extends Widget
 
     protected function getHeading(): string
     {
-        return trans('system-monitor::widget.title');
+        return trans('system-widget::widget.title');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Filaforge\SystemMonitor\Services;
+namespace Filaforge\SystemWidget\Services;
 
 use Symfony\Component\Process\Process;
 

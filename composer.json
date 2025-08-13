@@ -1,5 +1,5 @@
 {
-    "name": "filaforge/system-monitor",
+    "name": "filaforge/system-widget",
     "description": "Filament v4 dashboard widget for real-time system monitoring",
     "type": "library",
     "license": "MIT",
@@ -12,16 +12,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Filaforge\\SystemMonitor\\": "src/"
+            "Filaforge\\SystemWidget\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Filaforge\\SystemMonitor\\Providers\\SystemMonitorServiceProvider"
+                "Filaforge\\SystemWidget\\Providers\\SystemMonitorServiceProvider"
             ]
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }
