@@ -1,254 +1,331 @@
-# Filaforge Open Source Chat
+# Filaforge Opensource Chat
 
-FilamentPHP plugin providing a multi-provider chat interface with support for:
-
-- **OpenAI API** (GPT-4, GPT-3.5-turbo, etc.)
-- **HuggingFace API** (Llama 3, DialoGPT, etc.)
-- **Ollama Local** (Self-hosted models)
+A powerful Filament plugin that integrates various open-source AI chat capabilities directly into your admin panel.
 
 ## Features
 
-- 🤖 **Multiple AI Providers**: Switch between OpenAI, HuggingFace, and local Ollama models
-- 👤 **Model Profiles**: Create and manage different model configurations
-- 💬 **User Settings**: Per-user chat preferences and API keys
-- 📝 **Conversations**: Stored chat history and conversation management
-- 🔧 **Connection Testing**: Built-in tools to test provider connectivity
-- ⚡ **Streaming Support**: Real-time streaming responses (where supported)
-- 🛡️ **Rate Limiting**: Configurable per-minute and per-day limits
+- **Multi-Model Support**: Chat with various open-source AI models
+- **Conversation Management**: Save, organize, and continue chat conversations
+- **Model Selection**: Choose from available open-source AI models
+- **Customizable Settings**: Configure API endpoints, models, and chat parameters
+- **Real-time Chat**: Live chat experience with streaming responses
+- **Conversation History**: Keep track of all your AI conversations
+- **Export Conversations**: Save and share chat transcripts
+- **Role-based Access**: Configurable user permissions and access control
+- **Context Awareness**: Maintain conversation context across sessions
+- **Local Deployment**: Support for self-hosted AI models
 
 ## Installation
 
+### 1. Install via Composer
+
 ```bash
 composer require filaforge/opensource-chat
-php artisan vendor:publish --provider="Filaforge\\OpensourceChat\\OpensourceChatServiceProvider"
+```
+
+### 2. Publish & Migrate
+
+```bash
+# Publish provider groups (config, views, migrations)
+php artisan vendor:publish --provider="Filaforge\\OpensourceChat\\Providers\\OpensourceChatServiceProvider"
+
+# Run migrations
 php artisan migrate
 ```
 
-### Optional Configuration
-```bash
-php artisan vendor:publish --tag="opensource-chat-config"
-```
+### 3. Register Plugin
 
-## Quick Setup
-
-### 1. Setup Ollama (Local, Free)
-```bash
-# Install Ollama
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# Start Ollama
-ollama serve
-
-# Pull a model
-ollama pull llama3:latest
-
-# Setup in your app
-php artisan oschat:setup-provider ollama --test
-```
-
-### 2. Setup OpenAI
-```bash
-# Get API key from https://platform.openai.com/api-keys
-php artisan oschat:setup-provider openai --api-key=YOUR_API_KEY --test
-
-# Or set in .env
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
-### 3. Setup HuggingFace
-## Panel Registration (example)
-
-Add any of the following plugins to your panel chain as needed:
+Add the plugin to your Filament panel provider:
 
 ```php
-->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
-->plugin(\Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin::make())
-->plugin(\Filaforge\ChatAi\Providers\ChatAiPanelPlugin::make())
-->plugin(\Filaforge\UserManager\UserManagerPlugin::make())
-->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
-->plugin(\Filaforge\OpensourceChat\OpensourceChatPlugin::make())
-->plugin(\Filaforge\DatabaseViewer\DatabaseViewerPlugin::make())
-->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make())
-->plugin(\Filaforge\SystemPackages\SystemPackagesPlugin::make())
-->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
-->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make())
-->plugin(\Filaforge\SystemMonitor\SystemMonitorPlugin::make())
-->plugin(\Filaforge\HelloWidget\HelloWidgetPlugin::make())
-->plugin(\Filaforge\OllamaChat\Filament\OllamaChatPanelPlugin::make())
-```
-```bash
-# Get API key from https://huggingface.co/settings/tokens
-php artisan oschat:setup-provider huggingface --api-key=YOUR_API_KEY --test
+use Filament\Panel;
 
-# Or set in .env
-HF_API_KEY=your_huggingface_api_key_here
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ... other configuration
+        ->plugin(\Filaforge\OpensourceChat\OpensourceChatPlugin::make());
+}
 ```
 
-## Configuration
+## Setup
 
-The plugin supports multiple providers with different configurations:
+### Configuration
+
+The plugin will automatically:
+- Publish configuration files to `config/opensource-chat.php`
+- Publish view files to `resources/views/vendor/opensource-chat/`
+- Publish migration files to `database/migrations/`
+- Register necessary routes and middleware
+
+### Open Source AI Configuration
+
+Configure your open-source AI endpoints in the published config file:
+
+```php
+// config/opensource-chat.php
+return [
+    'default_provider' => env('OS_CHAT_PROVIDER', 'local'),
+    'providers' => [
+        'local' => [
+            'base_url' => env('OS_CHAT_LOCAL_URL', 'http://localhost:8000'),
+            'api_key' => env('OS_CHAT_LOCAL_KEY', ''),
+            'model' => env('OS_CHAT_LOCAL_MODEL', 'llama3'),
+        ],
+        'fireworks' => [
+            'base_url' => env('OS_CHAT_FIREWORKS_URL', 'https://api.fireworks.ai'),
+            'api_key' => env('OS_CHAT_FIREWORKS_KEY', ''),
+            'model' => env('OS_CHAT_FIREWORKS_MODEL', 'llama-v2-7b-chat'),
+        ],
+        'together' => [
+            'base_url' => env('OS_CHAT_TOGETHER_URL', 'https://api.together.xyz'),
+            'api_key' => env('OS_CHAT_TOGETHER_KEY', ''),
+            'model' => env('OS_CHAT_TOGETHER_MODEL', 'meta-llama/Llama-2-7b-chat-hf'),
+        ],
+    ],
+    'max_tokens' => env('OS_CHAT_MAX_TOKENS', 4096),
+    'temperature' => env('OS_CHAT_TEMPERATURE', 0.7),
+    'stream' => env('OS_CHAT_STREAM', true),
+    'timeout' => env('OS_CHAT_TIMEOUT', 60),
+];
+```
 
 ### Environment Variables
+
+Add these to your `.env` file:
+
 ```env
-# OpenAI
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_BASE_URL=https://api.openai.com/v1
-
-# HuggingFace
-HF_API_KEY=your_hf_api_key
-HF_BASE_URL=https://api-inference.huggingface.co
-
-# Ollama
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL_ID=llama3:latest
-
-# General
-OSCHAT_TIMEOUT=120
-OSCHAT_STREAM=true
+OS_CHAT_PROVIDER=local
+OS_CHAT_LOCAL_URL=http://localhost:8000
+OS_CHAT_LOCAL_KEY=your_local_api_key_here
+OS_CHAT_LOCAL_MODEL=llama3
+OS_CHAT_FIREWORKS_URL=https://api.fireworks.ai
+OS_CHAT_FIREWORKS_KEY=your_fireworks_api_key_here
+OS_CHAT_FIREWORKS_MODEL=llama-v2-7b-chat
+OS_CHAT_TOGETHER_URL=https://api.together.xyz
+OS_CHAT_TOGETHER_KEY=your_together_api_key_here
+OS_CHAT_TOGETHER_MODEL=meta-llama/Llama-2-7b-chat-hf
+OS_CHAT_MAX_TOKENS=4096
+OS_CHAT_TEMPERATURE=0.7
+OS_CHAT_STREAM=true
+OS_CHAT_TIMEOUT=60
 ```
 
-### Supported Models
+### Getting API Keys
 
-#### OpenAI
-- `gpt-4` - GPT-4 (most capable)
-- `gpt-4-turbo` - GPT-4 Turbo (faster)
-- `gpt-3.5-turbo` - GPT-3.5 Turbo (cost-effective)
+#### Fireworks AI
+1. Visit [Fireworks AI](https://fireworks.ai/)
+2. Create an account and navigate to API keys
+3. Generate a new API key
+4. Copy the key to your `.env` file
 
-#### HuggingFace
-- `meta-llama/Meta-Llama-3-8B-Instruct` - Llama 3 8B
-- `meta-llama/Meta-Llama-3-70B-Instruct` - Llama 3 70B
-- `microsoft/DialoGPT-medium` - DialoGPT Medium
-- `microsoft/DialoGPT-large` - DialoGPT Large
+#### Together AI
+1. Visit [Together AI](https://together.ai/)
+2. Sign up and go to API keys section
+3. Create a new API key
+4. Copy the key to your `.env` file
 
-#### Ollama (Local)
-- `llama3:latest` - Llama 3 Latest
-- `llama3:8b` - Llama 3 8B
-- `llama3:70b` - Llama 3 70B
-- `codellama:latest` - Code Llama (for coding)
-- `mistral:latest` - Mistral
-- `phi3:latest` - Phi-3
+#### Local Models
+For local deployment, you can use:
+- **Ollama**: Local model serving
+- **LM Studio**: Desktop AI model interface
+- **Custom endpoints**: Your own AI model servers
 
 ## Usage
 
-### Admin Interface
+### Accessing Opensource Chat
 
-1. **OS Chat**: Main chat interface
-   - Select model profiles
-   - Start conversations
-   - View chat history
+1. Navigate to your Filament admin panel
+2. Look for the "Opensource Chat" menu item
+3. Start chatting with open-source AI models
 
-2. **OS Chat Settings**: User preferences
-   - Default model selection
-   - API key management
-   - System prompts
+### Starting a Conversation
 
-3. **Model Profiles**: Manage AI models
-   - Create/edit model configurations
-   - Test connections
-   - Set rate limits
-   - Configure system prompts
+1. **Select Provider**: Choose from available AI providers
+2. **Select Model**: Choose the specific AI model to use
+3. **Type Your Message**: Enter your question or prompt
+4. **Send Message**: Submit your message to the AI
+5. **View Response**: See the AI's response in real-time
+6. **Continue Chat**: Keep the conversation going
 
-### Model Profile Management
+### Managing Conversations
 
-Create custom model profiles for different use cases:
+1. **New Chat**: Start a fresh conversation
+2. **Save Chat**: Automatically save important conversations
+3. **Load Chat**: Resume previous conversations
+4. **Export Chat**: Download conversation transcripts
+5. **Delete Chat**: Remove unwanted conversations
 
-```php
-// Example: Create a coding assistant profile
-ModelProfile::create([
-    'name' => 'Code Assistant',
-    'provider' => 'ollama',
-    'model_id' => 'codellama:latest',
-    'base_url' => 'http://localhost:11434',
-    'system_prompt' => 'You are an expert coding assistant. Provide clear, well-commented code examples.',
-    'is_active' => true,
-]);
-```
+### Advanced Features
 
-### API Usage
-
-The plugin provides a service for programmatic access:
-
-```php
-use Filaforge\OpensourceChat\Services\ChatApiService;
-use Filaforge\OpensourceChat\Models\ModelProfile;
-
-$profile = ModelProfile::where('name', 'GPT-4')->first();
-$service = new ChatApiService($profile);
-
-$messages = [
-    ['role' => 'user', 'content' => 'Hello, how are you?']
-];
-
-$response = $service->chatCompletion($messages);
-$reply = $response['choices'][0]['message']['content'];
-```
-
-## Provider Comparison
-
-| Provider | Cost | Speed | Privacy | Setup | Models |
-|----------|------|-------|---------|-------|--------|
-| **Ollama** | Free | Fast | High | Medium | Local models |
-| **OpenAI** | Paid | Fast | Medium | Easy | GPT-4, GPT-3.5 |
-| **HuggingFace** | Free/Paid | Medium | Medium | Easy | Open source |
-
-### Recommendations
-
-- **For Development**: Start with Ollama (free, private)
-- **For Production**: OpenAI (reliable, high quality)
-- **For Experimentation**: HuggingFace (many models, free tier)
+- **Provider Switching**: Switch between different AI providers
+- **Model Selection**: Choose from available models per provider
+- **Parameter Tuning**: Adjust temperature, max tokens, and other settings
+- **Context Management**: Maintain conversation context across sessions
+- **Streaming Responses**: Real-time AI responses for better user experience
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Ollama Connection Failed**
-   ```bash
-   # Ensure Ollama is running
-   ollama serve
-   
-   # Check if models are available
-   ollama list
-   
-   # Pull required models
-   ollama pull llama3:latest
-   ```
+- **API key errors**: Verify your API keys are correct and have sufficient credits
+- **Connection failures**: Check if the AI service endpoints are accessible
+- **Model not available**: Ensure the selected model is available in your plan
+- **Rate limiting**: Check your API rate limits and usage
 
-2. **OpenAI API Errors**
-   - Verify API key is correct
-   - Check billing/quota limits
-   - Ensure model is available in your region
+### Debug Steps
 
-3. **HuggingFace Timeouts**
-   - Models may take time to "warm up"
-   - Increase timeout in model profile
-   - Try different models
-
-### Debug Mode
-
-Enable debug logging in your `.env`:
-```env
-LOG_LEVEL=debug
+1. Check the plugin configuration:
+```bash
+php artisan config:show opensource-chat
 ```
 
-Check logs for detailed error information:
+2. Verify routes are registered:
+```bash
+php artisan route:list | grep opensource-chat
+```
+
+3. Test API connectivity:
+```bash
+# Test local endpoint
+curl http://localhost:8000/health
+
+# Test external endpoints
+curl -H "Authorization: Bearer YOUR_API_KEY" https://api.fireworks.ai/v1/models
+```
+
+4. Check environment variables:
+```bash
+php artisan tinker
+echo env('OS_CHAT_PROVIDER');
+echo env('OS_CHAT_LOCAL_URL');
+```
+
+5. Clear caches:
+```bash
+php artisan optimize:clear
+```
+
+6. Check logs for errors:
 ```bash
 tail -f storage/logs/laravel.log
 ```
 
+### Provider-Specific Issues
+
+#### Local Models
+- **Service not running**: Ensure your local AI service is started
+- **Port conflicts**: Check if the required ports are available
+- **Model not loaded**: Verify the model is properly loaded in your service
+
+#### Fireworks AI
+- **Authentication errors**: Check API key and permissions
+- **Model availability**: Ensure the model is available in your plan
+- **Rate limits**: Monitor your API usage and limits
+
+#### Together AI
+- **API key issues**: Verify your Together AI API key
+- **Model access**: Check if you have access to the selected model
+- **Service status**: Check Together AI service status
+
+## Security Considerations
+
+### Access Control
+
+- **Role-based permissions**: Restrict access to authorized users only
+- **API key security**: Never expose API keys in client-side code
+- **User isolation**: Ensure users can only access their own conversations
+- **Audit logging**: Track all chat activities and API usage
+
+### Best Practices
+
+- Use environment variables for API keys
+- Implement proper user authentication
+- Monitor API usage and costs
+- Regularly rotate API keys
+- Set appropriate rate limits
+- Use HTTPS for external API calls
+
+## Performance Optimization
+
+### Local Deployment
+
+- **Resource allocation**: Ensure sufficient RAM and CPU for models
+- **Model optimization**: Use quantized models for better performance
+- **Caching**: Implement response caching for common queries
+- **Load balancing**: Use multiple model instances if needed
+
+### External APIs
+
+- **Connection pooling**: Reuse HTTP connections when possible
+- **Request batching**: Batch multiple requests when feasible
+- **Response caching**: Cache responses to reduce API calls
+- **Fallback strategies**: Implement fallback to local models
+
+## Uninstall
+
+### 1. Remove Plugin Registration
+
+Remove the plugin from your panel provider:
+```php
+// remove ->plugin(\Filaforge\OpensourceChat\OpensourceChatPlugin::make())
+```
+
+### 2. Roll Back Migrations (Optional)
+
+```bash
+php artisan migrate:rollback
+# or roll back specific published files if needed
+```
+
+### 3. Remove Published Assets (Optional)
+
+```bash
+rm -f config/opensource-chat.php
+rm -rf resources/views/vendor/opensource-chat
+```
+
+### 4. Remove Package and Clear Caches
+
+```bash
+composer remove filaforge/opensource-chat
+php artisan optimize:clear
+```
+
+### 5. Clean Up Environment Variables
+
+Remove these from your `.env` file:
+```env
+OS_CHAT_PROVIDER=local
+OS_CHAT_LOCAL_URL=http://localhost:8000
+OS_CHAT_LOCAL_KEY=your_local_api_key_here
+OS_CHAT_LOCAL_MODEL=llama3
+OS_CHAT_FIREWORKS_URL=https://api.fireworks.ai
+OS_CHAT_FIREWORKS_KEY=your_fireworks_api_key_here
+OS_CHAT_FIREWORKS_MODEL=llama-v2-7b-chat
+OS_CHAT_TOGETHER_URL=https://api.together.xyz
+OS_CHAT_TOGETHER_KEY=your_together_api_key_here
+OS_CHAT_TOGETHER_MODEL=meta-llama/Llama-2-7b-chat-hf
+OS_CHAT_MAX_TOKENS=4096
+OS_CHAT_TEMPERATURE=0.7
+OS_CHAT_STREAM=true
+OS_CHAT_TIMEOUT=60
+```
+
+## Support
+
+- **Documentation**: [GitHub Repository](https://github.com/filaforge/opensource-chat)
+- **Issues**: [GitHub Issues](https://github.com/filaforge/opensource-chat/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/filaforge/opensource-chat/discussions)
+
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 ## License
 
-This package is open-sourced software licensed under the MIT license.
+This plugin is open-sourced software licensed under the [MIT license](LICENSE).
 
-## Acknowledgments
+---
 
-- Built on FilamentPHP
-- Inspired by ChatGPT and similar interfaces
-- Community-driven development
+**Made with ❤️ by the Filaforge Team**
