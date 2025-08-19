@@ -1,266 +1,264 @@
 # Filaforge HuggingFace Chat
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/filaforge/huggingface-chat.svg?style=flat-square)](https://packagist.org/packages/filaforge/huggingface-chat)
-[![License](https://img.shields.io/packagist/l/filaforge/huggingface-chat.svg?style=flat-square)](https://packagist.org/packages/filaforge/huggingface-chat)
-
-A comprehensive Filament panel plugin for chatting with AI models from multiple providers including HuggingFace, Ollama, and DeepSeek. Features conversation management, model profiles, and user-specific settings.
+A powerful Filament plugin that integrates HuggingFace AI chat capabilities directly into your admin panel.
 
 ## Features
 
-- 🤖 **Multi-Provider Support**: HuggingFace, Ollama, DeepSeek
-- 💬 **Conversation Management**: Save, load, and organize chat history
-- 🎛️ **HF Models**: Pre-configured model settings with easy switching
-- 👤 **User-Specific Settings**: Individual API keys and preferences
-- 📊 **Usage Tracking**: Monitor API usage and rate limits
-- 🎨 **Modern UI**: Clean, responsive interface built with Filament
-- 🔐 **Role-Based Access**: Configurable user permissions
-
-## Screenshots
-
-![Chat Interface](docs/screenshots/chat-interface.png)
-![Settings Page](docs/screenshots/settings-page.png)
-![Model Profiles](docs/screenshots/model-profiles.png)
+- **HuggingFace AI Integration**: Chat with thousands of AI models from HuggingFace
+- **Conversation Management**: Save, organize, and continue chat conversations
+- **Model Selection**: Choose from a wide variety of AI models
+- **Customizable Settings**: Configure API tokens, models, and chat parameters
+- **Real-time Chat**: Live chat experience with streaming responses
+- **Conversation History**: Keep track of all your AI conversations
+- **Export Conversations**: Save and share chat transcripts
+- **Role-based Access**: Configurable user permissions and access control
+- **Multi-model Support**: Switch between different HuggingFace models
+- **Context Awareness**: Maintain conversation context across sessions
 
 ## Installation
 
-You can install the package via composer:
+### 1. Install via Composer
 
 ```bash
 composer require filaforge/huggingface-chat
 ```
 
-### Publish & Migrate
+### 2. Publish & Migrate
 
 ```bash
-# Publish configuration (optional)
-php artisan vendor:publish --tag="huggingface-chat-config" || php artisan vendor:publish --tag="hf-chat-config"
-
-# Publish package assets/migrations (provider publishes groups)
-php artisan vendor:publish --provider="Filaforge\HuggingfaceChat\Providers\HfChatServiceProvider"
+# Publish provider groups (config, views, migrations)
+php artisan vendor:publish --provider="Filaforge\\HuggingfaceChat\\Providers\\HfChatServiceProvider"
 
 # Run migrations
 php artisan migrate
 ```
 
-### Manual Plugin Registration
+### 3. Register Plugin
 
-Register the plugin in your Filament panel provider:
+Add the plugin to your Filament panel provider:
 
 ```php
-use Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin;
+use Filament\Panel;
 
 public function panel(Panel $panel): Panel
 {
     return $panel
         // ... other configuration
-        ->plugins([
-            HfChatPanelPlugin::make(),
-        ]);
+        ->plugin(\Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin::make());
 }
 ```
 
+## Setup
+
+### Configuration
+
+The plugin will automatically:
+- Publish configuration files to `config/hf-chat.php`
+- Publish view files to `resources/views/vendor/hf-chat/`
+- Publish migration files to `database/migrations/`
+- Register necessary routes and middleware
+
+### HuggingFace API Configuration
+
+Configure your HuggingFace API in the published config file:
+
+```php
+// config/hf-chat.php
+return [
+    'api_token' => env('HF_API_TOKEN'),
+    'base_url' => env('HF_BASE_URL', 'https://api-inference.huggingface.co'),
+    'default_model' => env('HF_MODEL_ID', 'meta-llama/Meta-Llama-3-8B-Instruct'),
+    'max_length' => env('HF_MAX_LENGTH', 512),
+    'temperature' => env('HF_TEMPERATURE', 0.7),
+    'stream' => env('HF_STREAM', false),
+    'timeout' => env('HF_TIMEOUT', 60),
+    'use_openai_format' => env('HF_USE_OPENAI', true),
+];
+```
+
+### Environment Variables
+
+Add these to your `.env` file:
+
+```env
+HF_API_TOKEN=your_huggingface_api_token_here
+HF_BASE_URL=https://api-inference.huggingface.co
+HF_MODEL_ID=meta-llama/Meta-Llama-3-8B-Instruct
+HF_MAX_LENGTH=512
+HF_TEMPERATURE=0.7
+HF_STREAM=false
+HF_TIMEOUT=60
+HF_USE_OPENAI=true
+```
+
+### Getting Your HuggingFace API Token
+
+1. Visit [HuggingFace](https://huggingface.co/)
+2. Create an account or sign in
+3. Go to your profile settings
+4. Navigate to "Access Tokens"
+5. Generate a new token
+6. Copy the token to your `.env` file
+
+## Usage
+
+### Accessing HuggingFace Chat
+
+1. Navigate to your Filament admin panel
+2. Look for the "HF Chat" menu item
+3. Start chatting with AI models
+
+### Starting a Conversation
+
+1. **Select Model**: Choose from available HuggingFace models
+2. **Type Your Message**: Enter your question or prompt
+3. **Send Message**: Submit your message to the AI
+4. **View Response**: See the AI's response
+5. **Continue Chat**: Keep the conversation going
+
+### Managing Conversations
+
+1. **New Chat**: Start a fresh conversation
+2. **Save Chat**: Automatically save important conversations
+3. **Load Chat**: Resume previous conversations
+4. **Export Chat**: Download conversation transcripts
+5. **Delete Chat**: Remove unwanted conversations
+
+### Advanced Features
+
+- **Model Selection**: Switch between different HuggingFace models
+- **Parameter Tuning**: Adjust temperature, max length, and other settings
+- **Context Management**: Maintain conversation context across sessions
+- **Streaming Responses**: Real-time AI responses (when supported)
+
 ## Troubleshooting
 
-- Publish and run migrations if pages or models are missing:
+### Common Issues
+
+- **API token errors**: Verify your HuggingFace API token is correct
+- **Rate limiting**: Check your HuggingFace API rate limits and usage
+- **Model not available**: Ensure the selected model is available and loaded
+- **Connection timeouts**: Check network connectivity and timeout settings
+
+### Debug Steps
+
+1. Check the plugin configuration:
 ```bash
-php artisan vendor:publish --provider="Filaforge\\HuggingfaceChat\\Providers\\HfChatServiceProvider"
-php artisan migrate
+php artisan config:show hf-chat
 ```
-- Clear caches after installing or updating:
+
+2. Verify routes are registered:
+```bash
+php artisan route:list | grep hf-chat
+```
+
+3. Test API connectivity:
+```bash
+php artisan tinker
+# Test your API token manually
+```
+
+4. Check environment variables:
+```bash
+php artisan tinker
+echo env('HF_API_TOKEN');
+```
+
+5. Clear caches:
 ```bash
 php artisan optimize:clear
 ```
-- Check logs for helpful error details:
+
+6. Check logs for errors:
 ```bash
 tail -f storage/logs/laravel.log
 ```
 
+### API Error Codes
+
+- **401 Unauthorized**: Invalid or expired API token
+- **429 Too Many Requests**: Rate limit exceeded
+- **503 Service Unavailable**: Model is currently loading or unavailable
+- **Timeout**: Request took too long to complete
+
+## Security Considerations
+
+### Access Control
+
+- **Role-based permissions**: Restrict access to authorized users only
+- **API token security**: Never expose API tokens in client-side code
+- **User isolation**: Ensure users can only access their own conversations
+- **Audit logging**: Track all chat activities and API usage
+
+### Best Practices
+
+- Use environment variables for API tokens
+- Implement proper user authentication
+- Monitor API usage and costs
+- Regularly rotate API tokens
+- Set appropriate rate limits
+
 ## Uninstall
 
-1) Remove the panel plugin registration:
+### 1. Remove Plugin Registration
+
+Remove the plugin from your panel provider:
 ```php
-// remove ->plugin(\\Filaforge\\HuggingfaceChat\\Providers\\HfChatPanelPlugin::make())
+// remove ->plugin(\Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin::make())
 ```
-2) Roll back or drop tables if desired:
+
+### 2. Roll Back Migrations (Optional)
+
 ```bash
 php artisan migrate:rollback
+# or roll back specific published files if needed
 ```
-3) Remove published assets:
+
+### 3. Remove Published Assets (Optional)
+
 ```bash
 rm -f config/hf-chat.php
-rm -rf resources/views/vendor/huggingface-chat
+rm -rf resources/views/vendor/hf-chat
 ```
-4) Remove the package and clear caches:
+
+### 4. Remove Package and Clear Caches
+
 ```bash
 composer remove filaforge/huggingface-chat
 php artisan optimize:clear
 ```
 
-### Run Migrations
+### 5. Clean Up Environment Variables
 
-```bash
-php artisan migrate
-```
-
-## Configuration
-
-Publish and configure the config file:
-
-```bash
-php artisan vendor:publish --tag="huggingface-chat-config"
-```
-
-### Environment Variables
-
-```bash
-# HuggingFace Configuration
-HF_API_TOKEN=your_hf_token_here
-HF_MODEL_ID=meta-llama/Meta-Llama-3-8B-Instruct
+Remove these from your `.env` file:
+```env
+HF_API_TOKEN=your_huggingface_api_token_here
 HF_BASE_URL=https://api-inference.huggingface.co
+HF_MODEL_ID=meta-llama/Meta-Llama-3-8B-Instruct
+HF_MAX_LENGTH=512
+HF_TEMPERATURE=0.7
 HF_STREAM=false
-HF_USE_OPENAI=true
-HF_SYSTEM_PROMPT="You are a helpful assistant."
 HF_TIMEOUT=60
+HF_USE_OPENAI=true
 ```
-
-### HF Models
-
-The plugin automatically seeds common HF models:
-
-- **GPT-OSS 120B (Fireworks)** - OpenAI-compatible endpoint
-- **Llama 3 Latest (Ollama)** - Local Ollama instance
-- **DeepSeek Chat** - DeepSeek API integration
-
-## Usage
-
-### Basic Chat
-
-1. Navigate to the **HF Chat** page in your Filament panel
-2. Select a model profile from the dropdown
-3. Start chatting with the AI
-
-### Managing Settings
-
-1. Visit **HF Settings** to configure:
-   - Global API tokens
-   - Default model parameters
-   - Request timeouts and streaming options
-
-### HF Models
-
-1. Access **HF Models** from the chat interface
-2. Add, edit, or delete model configurations
-3. Switch between profiles during conversations
-
-### Conversation History
-
-1. All conversations are automatically saved
-2. Access **Conversations** to view chat history
-3. Continue previous conversations or start new ones
-
-## Advanced Configuration
-
-### Role-Based Access
-
-Configure user roles in the config file:
-
-```php
-'allow_roles' => ['admin', 'editor'],
-'admin_roles' => ['admin'],
-```
-
-### Custom Model Providers
-
-Add custom HF models programmatically:
-
-```php
-use Filaforge\HuggingfaceChat\Models\ModelProfile;
-
-ModelProfile::create([
-    'name' => 'Custom Model',
-    'provider' => 'custom',
-    'model_id' => 'custom/model-name',
-    'base_url' => 'https://api.custom-provider.com',
-    'api_key' => 'your-api-key',
-    'stream' => true,
-    'timeout' => 120,
-    'system_prompt' => 'Custom system prompt...',
-]);
-```
-
-## API Reference
-
-### Models
-
-- `Conversation` - Chat conversation storage
-- `Setting` - User-specific settings
-- `ModelProfile` - Model configuration profiles
-- `ModelProfileUsage` - Usage tracking and rate limiting
-
-### Pages
-
-- `HfChatPage` - Main chat interface
-- `HfSettingsPage` - Settings management
-- `HfConversationsPage` - Conversation history
-
-## Development
-
-### Code Quality
-
-This plugin follows Laravel and Filament best practices:
-
-- PSR-4 autoloading
-- Type hints and return types
-- Proper error handling
-- Comprehensive testing (coming soon)
-
-### Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE) for more information.
-
-## Credits
-
-- [Filaforge Team](https://github.com/filaforge)
-- [Filament Framework](https://filamentphp.com)
-- [Laravel Framework](https://laravel.com)
-
-## Troubleshooting
-
-### Common Model Not Found Error
-
-If you see: `The requested model 'model-name' does not exist`
-
-**Quick Fix**: Use these verified working models:
-- `microsoft/DialoGPT-medium`
-- `google/flan-t5-large`  
-- `facebook/blenderbot-400M-distill`
-
-**Detailed Help**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for complete guide.
-
-### API Token Issues
-
-1. Get your token: [HuggingFace Settings](https://huggingface.co/settings/tokens)
-2. Set environment variable: `HF_API_TOKEN=your_token_here`
-3. Or save in HF Settings page
 
 ## Support
 
-- 📧 Email: filaforger@gmail.com
-- 🐛 Issues: [GitHub Issues](https://github.com/filaforge/huggingface-chat/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/filaforge/huggingface-chat/discussions)
-- 📖 Troubleshooting: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+- **Documentation**: [GitHub Repository](https://github.com/filaforge/huggingface-chat)
+- **Issues**: [GitHub Issues](https://github.com/filaforge/huggingface-chat/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/filaforge/huggingface-chat/discussions)
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## License
+
+This plugin is open-sourced software licensed under the [MIT license](LICENSE).
+
+---
+
+**Made with ❤️ by the Filaforge Team**
 
 
 
