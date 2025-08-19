@@ -1,93 +1,232 @@
 # Filaforge Hello Widget
 
-A simple Filam## Usage
-
-After installation and registration, the "Hello Widget" will automatically appear on your Filament dashboard. This simple widget demonstrates:
-
-- **Dashboard Integration**: Seamless integration with Filament's dashboard
-- **Widget Example**: Perfect starting point for creating custom widgets
-- **Clean Design**: Matches Filament's design system
-
-The widget is ideal for learning widget development or as a template for custom dashboard widgets.
-
-## Configuration
-
-No additional configuration is required. The widget works out of the box.
+A simple and elegant Filament plugin that adds a customizable hello widget to your admin panel dashboard.
 
 ## Features
 
-- ✅ Simple dashboard widget
-- ✅ Filament v4 compatible
-- ✅ Clean, professional design
-- ✅ Perfect for learning/templating
-
----
-
-**Package**: `filaforge/hello-widget`  
-**License**: MIT  
-**Requirements**: PHP ^8.1, Laravel ^12, Filament ^4.0v4 dashboard widget plugin used as an example skeleton.
-
-![Screenshot](screenshot.png)
-
-## Requirements
-- PHP >= 8.1
-- Laravel 12 (illuminate/support ^12)
-- Filament ^4.0
+- **Dashboard Widget**: Beautiful hello widget for your Filament dashboard
+- **Customizable Greeting**: Personalize the welcome message
+- **User Information**: Display current user details and status
+- **Responsive Design**: Works seamlessly on all device sizes
+- **Dark Mode Support**: Full compatibility with Filament's dark mode
+- **Easy Customization**: Simple configuration options
+- **Performance Optimized**: Lightweight and fast loading
+- **Accessibility**: Built with accessibility best practices
 
 ## Installation
 
-### Step 1: Install via Composer
+### 1. Install via Composer
+
 ```bash
 composer require filaforge/hello-widget
 ```
 
-### Step 2: Service Provider Registration
-The service provider is auto-discovered, so no manual registration is required.
+### 2. Publish & Migrate
 
-### Publish (optional)
 ```bash
+# Publish provider groups (config, views, migrations)
 php artisan vendor:publish --provider="Filaforge\\HelloWidget\\Providers\\HelloWidgetServiceProvider"
+
+# Run migrations
+php artisan migrate
 ```
 
-### Step 4: Register the plugin in your panel
+### 3. Register Plugin
+
+Add the plugin to your Filament panel provider:
+
 ```php
-use Filaforge\HelloWidget\HelloWidgetPlugin;
 use Filament\Panel;
 
 public function panel(Panel $panel): Panel
 {
     return $panel
-        // ...
-        ->plugin(HelloWidgetPlugin::make());
+        // ... other configuration
+        ->plugin(\Filaforge\HelloWidget\HelloWidgetPlugin::make());
 }
 ```
 
+## Setup
+
+### Configuration
+
+The plugin will automatically:
+- Publish configuration files to `config/hello-widget.php`
+- Publish view files to `resources/views/vendor/hello-widget/`
+- Publish migration files to `database/migrations/`
+- Register necessary routes and middleware
+
+### Widget Configuration
+
+Configure the hello widget in the published config file:
+
+```php
+// config/hello-widget.php
+return [
+    'greeting' => 'Hello',
+    'show_user_info' => true,
+    'show_timestamp' => true,
+    'custom_message' => 'Welcome to your dashboard!',
+    'widget_position' => 'top',
+    'refresh_interval' => 0, // 0 = no auto-refresh
+    'allowed_roles' => [], // Empty = all authenticated users
+];
+```
+
+### Environment Variables
+
+Add these to your `.env` file if needed:
+
+```env
+HELLO_WIDGET_GREETING=Hello
+HELLO_WIDGET_CUSTOM_MESSAGE=Welcome to your dashboard!
+HELLO_WIDGET_SHOW_USER_INFO=true
+```
+
+## Usage
+
+### Accessing the Hello Widget
+
+1. Navigate to your Filament admin panel
+2. The hello widget will appear on your dashboard
+3. Customize the widget through the configuration
+
+### Widget Features
+
+1. **Greeting Display**: Shows a personalized greeting message
+2. **User Information**: Displays current user name and details
+3. **Timestamp**: Shows current date and time
+4. **Custom Messages**: Display custom welcome messages
+5. **Responsive Layout**: Adapts to different screen sizes
+
+### Customization Options
+
+- **Greeting Text**: Change the default greeting message
+- **User Info Display**: Toggle user information visibility
+- **Timestamp Format**: Customize date and time display
+- **Widget Position**: Control where the widget appears
+- **Auto-refresh**: Set automatic refresh intervals
+- **Role Restrictions**: Limit widget access to specific user roles
+
 ## Troubleshooting
 
-- Publish provider assets/config (if any) and clear caches:
+### Common Issues
+
+- **Widget not showing**: Ensure the plugin is properly registered
+- **Configuration not loading**: Check if config file is published
+- **User info missing**: Verify user authentication is working
+- **Styling issues**: Clear view caches and check CSS conflicts
+
+### Debug Steps
+
+1. Check the plugin configuration:
 ```bash
-php artisan vendor:publish --provider="Filaforge\\HelloWidget\\Providers\\HelloWidgetServiceProvider" || true
-php artisan optimize:clear
+php artisan config:show hello-widget
 ```
-- Check logs:
+
+2. Verify routes are registered:
+```bash
+php artisan route:list | grep hello-widget
+```
+
+3. Check if widget is registered:
+```bash
+php artisan tinker
+# Check widget registration
+```
+
+4. Clear caches:
+```bash
+php artisan optimize:clear
+php artisan view:clear
+```
+
+5. Check logs for errors:
 ```bash
 tail -f storage/logs/laravel.log
 ```
 
+### Widget Customization
+
+If you need to customize the widget appearance:
+
+1. Publish the widget views:
+```bash
+php artisan vendor:publish --tag=hello-widget-views
+```
+
+2. Edit the published views in `resources/views/vendor/hello-widget/`
+
+3. Customize the CSS in `resources/css/hello-widget.css`
+
+## Security Considerations
+
+### Access Control
+
+- **Role-based permissions**: Restrict widget access to authorized users
+- **User data privacy**: Ensure sensitive user information is not exposed
+- **Widget visibility**: Control who can see the widget content
+
+### Best Practices
+
+- Use appropriate user role restrictions
+- Avoid displaying sensitive information in the widget
+- Implement proper user authentication
+- Regularly review access permissions
+
 ## Uninstall
 
-1) Remove the panel plugin registration:
+### 1. Remove Plugin Registration
+
+Remove the plugin from your panel provider:
 ```php
-// remove ->plugin(\\Filaforge\\HelloWidget\\HelloWidgetPlugin::make())
+// remove ->plugin(\Filaforge\HelloWidget\HelloWidgetPlugin::make())
 ```
-2) Remove the package and clear caches:
+
+### 2. Roll Back Migrations (Optional)
+
+```bash
+php artisan migrate:rollback
+# or roll back specific published files if needed
+```
+
+### 3. Remove Published Assets (Optional)
+
+```bash
+rm -f config/hello-widget.php
+rm -rf resources/views/vendor/hello-widget
+```
+
+### 4. Remove Package and Clear Caches
+
 ```bash
 composer remove filaforge/hello-widget
 php artisan optimize:clear
 ```
 
-## Usage
-After registration, the “Hello Widget” appears on the dashboard.
+### 5. Clean Up Environment Variables
+
+Remove these from your `.env` file:
+```env
+HELLO_WIDGET_GREETING=Hello
+HELLO_WIDGET_CUSTOM_MESSAGE=Welcome to your dashboard!
+HELLO_WIDGET_SHOW_USER_INFO=true
+```
+
+## Support
+
+- **Documentation**: [GitHub Repository](https://github.com/filaforge/hello-widget)
+- **Issues**: [GitHub Issues](https://github.com/filaforge/hello-widget/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/filaforge/hello-widget/discussions)
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## License
+
+This plugin is open-sourced software licensed under the [MIT license](LICENSE).
 
 ---
-Package: `filaforge/hello-widget`
+
+**Made with ❤️ by the Filaforge Team**
