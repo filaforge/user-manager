@@ -1,5 +1,6 @@
 {
-  "name": "filaforge/system-packages",
+  "name": "filaforge/[^"]*",
+  "version": "2.0.1",
   "description": "System Packages widget: list all Composer packages in a Filament table",
   "type": "library",
   "license": "MIT",
