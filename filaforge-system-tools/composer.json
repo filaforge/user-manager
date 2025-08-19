@@ -1,5 +1,6 @@
 {
-  "name": "filaforge/system-tools",
+  "name": "filaforge/[^"]*",
+  "version": "2.0.1",
   "description": "System tools plugin",
   "type": "library",
   "license": "MIT",
