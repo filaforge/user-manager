@@ -59,6 +59,12 @@ This will create a `config/database-viewer.php` file where you can modify displa
 composer require filaforge/database-viewer
 ```
 
+### Publish (optional)
+
+```bash
+php artisan vendor:publish --provider="Filaforge\\DatabaseViewer\\Providers\\DatabaseViewerServiceProvider"
+```
+
 ### Step 2: Service Provider Registration
 The service provider is auto-discovered, so no manual registration is required.
 
@@ -126,7 +132,21 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             // Add the plugin here
-            ->plugin(DatabaseViewerPlugin::make());
+            ->plugin(DatabaseViewerPlugin::make())
+            ->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
+            ->plugin(\Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin::make())
+            ->plugin(\Filaforge\ChatAi\Providers\ChatAiPanelPlugin::make())
+            ->plugin(\Filaforge\UserManager\UserManagerPlugin::make())
+            ->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
+            ->plugin(\Filaforge\OpensourceChat\OpensourceChatPlugin::make())
+            ->plugin(\Filaforge\DatabaseViewer\DatabaseViewerPlugin::make())
+            ->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make())
+            ->plugin(\Filaforge\SystemPackages\SystemPackagesPlugin::make())
+            ->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
+            ->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make())
+            ->plugin(\Filaforge\SystemMonitor\SystemMonitorPlugin::make())
+            ->plugin(\Filaforge\HelloWidget\HelloWidgetPlugin::make())
+            ->plugin(\Filaforge\OllamaChat\Filament\OllamaChatPanelPlugin::make());
     }
 }
 ```

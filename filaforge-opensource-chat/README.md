@@ -20,7 +20,7 @@ FilamentPHP plugin providing a multi-provider chat interface with support for:
 
 ```bash
 composer require filaforge/opensource-chat
-php artisan vendor:publish --tag="opensource-chat-migrations"
+php artisan vendor:publish --provider="Filaforge\\OpensourceChat\\OpensourceChatServiceProvider"
 php artisan migrate
 ```
 
@@ -56,6 +56,26 @@ OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 ### 3. Setup HuggingFace
+## Panel Registration (example)
+
+Add any of the following plugins to your panel chain as needed:
+
+```php
+->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
+->plugin(\Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin::make())
+->plugin(\Filaforge\ChatAi\Providers\ChatAiPanelPlugin::make())
+->plugin(\Filaforge\UserManager\UserManagerPlugin::make())
+->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
+->plugin(\Filaforge\OpensourceChat\OpensourceChatPlugin::make())
+->plugin(\Filaforge\DatabaseViewer\DatabaseViewerPlugin::make())
+->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make())
+->plugin(\Filaforge\SystemPackages\SystemPackagesPlugin::make())
+->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
+->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make())
+->plugin(\Filaforge\SystemMonitor\SystemMonitorPlugin::make())
+->plugin(\Filaforge\HelloWidget\HelloWidgetPlugin::make())
+->plugin(\Filaforge\OllamaChat\Filament\OllamaChatPanelPlugin::make())
+```
 ```bash
 # Get API key from https://huggingface.co/settings/tokens
 php artisan oschat:setup-provider huggingface --api-key=YOUR_API_KEY --test

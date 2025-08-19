@@ -16,6 +16,12 @@ A Filament v4 panel plugin that provides a SQL query explorer page to run read-o
 composer require filaforge/database-query
 ```
 
+### Publish (optional)
+
+```bash
+php artisan vendor:publish --provider="Filaforge\\DatabaseQuery\\Providers\\DatabaseQueryServiceProvider"
+```
+
 ### Step 2: Service Provider Registration
 The service provider is auto-discovered, so no manual registration is required.
 
@@ -83,7 +89,21 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             // Add the plugin here
-            ->plugin(DatabaseQueryPlugin::make());
+            ->plugin(DatabaseQueryPlugin::make())
+            ->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
+            ->plugin(\Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin::make())
+            ->plugin(\Filaforge\ChatAi\Providers\ChatAiPanelPlugin::make())
+            ->plugin(\Filaforge\UserManager\UserManagerPlugin::make())
+            ->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
+            ->plugin(\Filaforge\OpensourceChat\OpensourceChatPlugin::make())
+            ->plugin(\Filaforge\DatabaseViewer\DatabaseViewerPlugin::make())
+            ->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make())
+            ->plugin(\Filaforge\SystemPackages\SystemPackagesPlugin::make())
+            ->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
+            ->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make())
+            ->plugin(\Filaforge\SystemMonitor\SystemMonitorPlugin::make())
+            ->plugin(\Filaforge\HelloWidget\HelloWidgetPlugin::make())
+            ->plugin(\Filaforge\OllamaChat\Filament\OllamaChatPanelPlugin::make());
     }
 }
 ```

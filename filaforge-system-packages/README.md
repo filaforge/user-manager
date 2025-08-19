@@ -48,10 +48,9 @@ composer require filaforge/system-packages
 ### Step 2: Service Provider Registration
 The service provider is auto-discovered, so no manual registration is required.
 
-### Step 3: Publish Assets (Optional)
-If the plugin includes publishable assets, you can publish them:
+### Publish (optional)
 ```bash
-php artisan vendor:publish --provider="Filaforge\SystemPackages\SystemPackagesServiceProvider"
+php artisan vendor:publish --provider="Filaforge\\SystemPackages\\Providers\\SystemPackagesServiceProvider"
 ```
 
 ### Step 4: Register the plugin in your panel
@@ -65,6 +64,25 @@ public function panel(Panel $panel): Panel
         // ...
         ->plugin(SystemPackagesPlugin::make());
 }
+```
+
+### Register Multiple Filaforge Plugins (example)
+
+```php
+->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
+->plugin(\Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin::make())
+->plugin(\Filaforge\ChatAi\Providers\ChatAiPanelPlugin::make())
+->plugin(\Filaforge\UserManager\UserManagerPlugin::make())
+->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
+->plugin(\Filaforge\OpensourceChat\OpensourceChatPlugin::make())
+->plugin(\Filaforge\DatabaseViewer\DatabaseViewerPlugin::make())
+->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make())
+->plugin(\Filaforge\SystemPackages\SystemPackagesPlugin::make())
+->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
+->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make())
+->plugin(\Filaforge\SystemMonitor\SystemMonitorPlugin::make())
+->plugin(\Filaforge\HelloWidget\HelloWidgetPlugin::make())
+->plugin(\Filaforge\OllamaChat\Filament\OllamaChatPanelPlugin::make())
 ```
 
 ## Usage

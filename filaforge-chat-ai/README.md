@@ -29,6 +29,19 @@ You can install the package via composer:
 composer require filaforge/chat-ai
 ```
 
+### Publish & Migrate
+
+```bash
+# Publish configuration (optional)
+php artisan vendor:publish --tag="chat-ai-config"
+
+# Publish provider groups (if any)
+php artisan vendor:publish --provider="Filaforge\\ChatAi\\Providers\\ChatAiServiceProvider"
+
+# Run migrations
+php artisan migrate
+```
+
 ### Manual Plugin Registration
 
 Register the plugin in your Filament panel provider:
@@ -44,6 +57,25 @@ public function panel(Panel $panel): Panel
             ChatAiPanelPlugin::make(),
         ]);
 }
+```
+
+### Register Multiple Filaforge Plugins (example)
+
+```php
+->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
+->plugin(\Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin::make())
+->plugin(\Filaforge\ChatAi\Providers\ChatAiPanelPlugin::make())
+->plugin(\Filaforge\UserManager\UserManagerPlugin::make())
+->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
+->plugin(\Filaforge\OpensourceChat\OpensourceChatPlugin::make())
+->plugin(\Filaforge\DatabaseViewer\DatabaseViewerPlugin::make())
+->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make())
+->plugin(\Filaforge\SystemPackages\SystemPackagesPlugin::make())
+->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
+->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make())
+->plugin(\Filaforge\SystemMonitor\SystemMonitorPlugin::make())
+->plugin(\Filaforge\HelloWidget\HelloWidgetPlugin::make())
+->plugin(\Filaforge\OllamaChat\Filament\OllamaChatPanelPlugin::make())
 ```
 
 ### Run Migrations
