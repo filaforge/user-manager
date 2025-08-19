@@ -1,155 +1,173 @@
 # Filaforge API Explorer
 
-A Filament v4 panel plugin that adds an API Explorer page for testing H## Usage
-
-After installation and registration, you'll find the "API Explorer" page in your Filament panel navigation. The page provides:
-
-- **URL Input**: Enter the API endpoint you want to test
-- **HTTP Method Selection**: Choose GET, POST, PUT, DELETE, etc.
-- **Headers Management**: Add custom headers for authentication or content-type
-- **Request Body**: For POST/PUT requests, provide JSON or form data
-- **Response Display**: View the API response with syntax highlighting
-- **History**: Keep track of your recent API calls
-
-Navigate to your Filament panel and look for "API Explorer" in the sidebar to start testing your APIs.
-
-## Configuration
-
-No additional configuration is required. The plugin works out of the box after installation.
+A powerful Filament plugin for exploring and testing API endpoints directly from your admin panel.
 
 ## Features
 
-- ✅ Full HTTP method support (GET, POST, PUT, DELETE, PATCH, etc.)
-- ✅ Custom headers management
-- ✅ Request body support for JSON and form data
-- ✅ Response syntax highlighting
-- ✅ Request history
-- ✅ Clean, intuitive interface matching Filament's design
-
----
-
-**Package**: `filaforge/api-explorer`  
-**License**: MIT  
-**Requirements**: PHP ^8.1, Laravel ^12, Filament ^4.0s (similar to Postman) inside your admin panel.
-
-![Screenshot](screenshot.png)
-
-## Requirements
-- PHP >= 8.1
-- Laravel 12 (illuminate/support ^12)
-- Filament ^4.0
+- **API Endpoint Explorer**: Browse and test all your API routes
+- **Request Builder**: Easy-to-use interface for building API requests
+- **Response Viewer**: Beautiful display of API responses
+- **Authentication Support**: Handle various auth methods
+- **Request History**: Keep track of your API testing
+- **Export Results**: Save and share your API test results
 
 ## Installation
 
-### Step 1: Install via Composer
+### 1. Install via Composer
+
 ```bash
 composer require filaforge/api-explorer
 ```
 
-### Publish (optional)
+### 2. Publish & Migrate
 
 ```bash
+# Publish provider groups (config, views, migrations)
 php artisan vendor:publish --provider="Filaforge\\ApiExplorer\\Providers\\ApiExplorerServiceProvider"
+
+# Run migrations
+php artisan migrate
 ```
 
-### Step 2: Service Provider Registration
-The service provider is auto-discovered, so no manual registration is required.
+### 3. Register Plugin
 
-### Step 3: Register the Plugin in Your Panel
-Add the plugin to your Filament panel configuration in `app/Providers/Filament/AdminPanelProvider.php` (or your custom panel provider):
+Add the plugin to your Filament panel provider:
 
 ```php
-<?php
-
-namespace App\Providers\Filament;
-
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
-use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
-use Filament\Widgets;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\AuthenticateSession;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-// Add this import
-use Filaforge\ApiExplorer\ApiExplorerPlugin;
-
-class AdminPanelProvider extends PanelProvider
+public function panel(Panel $panel): Panel
 {
-    public function panel(Panel $panel): Panel
-    {
-        return $panel
-            ->default()
-            ->id('admin')
-            ->path('admin')
-            ->login()
-            ->colors([
-                'primary' => Color::Amber,
-            ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
-            ])
-            ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-            ])
-            ->authMiddleware([
-                Authenticate::class,
-            ])
-            // Add the plugin here
-            ->plugin(ApiExplorerPlugin::make());
-    }
+    return $panel
+        // ... other configuration
+        ->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make());
 }
 ```
 
-### Step 4: Clear Cache and Discover Assets
-```bash
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
+## Setup
+
+### Configuration
+
+The plugin will automatically:
+- Publish configuration files to `config/api-explorer.php`
+- Publish view files to `resources/views/vendor/api-explorer/`
+- Publish migration files to `database/migrations/`
+- Register necessary routes and middleware
+
+### Customization
+
+You can customize the plugin behavior by editing the published configuration file:
+
+```php
+// config/api-explorer.php
+return [
+    'route_prefix' => 'api-explorer',
+    'middleware' => ['web', 'auth'],
+    'max_history' => 100,
+];
 ```
 
 ## Usage
-After registering, the plugin adds an API Explorer page to your panel. The exact URL depends on your panel path and navigation. Open your panel and look for “API Explorer”.
 
-## Configuration
-No configuration is required.
+### Accessing the API Explorer
 
----
-Package: `filaforge/api-explorer`## Filaforge API Explorer
+1. Navigate to your Filament admin panel
+2. Look for the "API Explorer" menu item
+3. Start exploring your API endpoints
 
-A Filament plugin that provides a simple API testing page similar to Postman, with lazy‑loaded CSS assets.
+### Testing API Endpoints
 
-Usage:
+1. **Select Endpoint**: Choose from available API routes
+2. **Set Parameters**: Configure request parameters, headers, and body
+3. **Send Request**: Execute the API call
+4. **View Response**: See the response data, status, and headers
+5. **Save Results**: Store successful requests for future reference
 
-- Register in your panel provider:
+### Authentication
 
-```php
-->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make())
+The plugin supports various authentication methods:
+- Bearer tokens
+- API keys
+- Session cookies
+- Custom headers
+
+## Troubleshooting
+
+### Common Issues
+
+- **Routes not showing**: Ensure your API routes are properly registered
+- **Authentication failing**: Check your auth configuration and tokens
+- **CORS issues**: Verify your CORS settings for the API endpoints
+- **Missing permissions**: Ensure the user has access to the API Explorer
+
+### Debug Steps
+
+1. Check the plugin configuration:
+```bash
+php artisan config:show api-explorer
 ```
 
-The page appears as "API Explorer" in the admin navigation.
+2. Verify routes are registered:
+```bash
+php artisan route:list | grep api-explorer
+```
+
+3. Clear caches:
+```bash
+php artisan optimize:clear
+```
+
+4. Check logs for errors:
+```bash
+tail -f storage/logs/laravel.log
+```
+
+## Uninstall
+
+### 1. Remove Plugin Registration
+
+Remove the plugin from your panel provider:
+```php
+// remove ->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make())
+```
+
+### 2. Roll Back Migrations (Optional)
+
+```bash
+php artisan migrate:rollback
+# or roll back specific published files if needed
+```
+
+### 3. Remove Published Assets (Optional)
+
+```bash
+rm -f config/api-explorer.php
+rm -rf resources/views/vendor/api-explorer
+```
+
+### 4. Remove Package and Clear Caches
+
+```bash
+composer remove filaforge/api-explorer
+php artisan optimize:clear
+```
+
+## Support
+
+- **Documentation**: [GitHub Repository](https://github.com/filaforge/api-explorer)
+- **Issues**: [GitHub Issues](https://github.com/filaforge/api-explorer/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/filaforge/api-explorer/discussions)
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## License
+
+This plugin is open-sourced software licensed under the [MIT license](LICENSE).
+
+---
+
+**Made with ❤️ by the Filaforge Team**
 
 
