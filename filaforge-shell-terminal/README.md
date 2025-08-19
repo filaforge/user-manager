@@ -1,60 +1,97 @@
 # Filaforge Shell Terminal
 
-A powerful and secure shell terminal plugin for FilamentPHP with local assets, enhanced security, and comprehensive configuration options.
+A powerful Filament plugin that provides a secure web-based terminal interface directly in your admin panel.
 
-## 🚀 Features
+## Features
 
-- **🔒 Enhanced Security**: Comprehensive command filtering and rate limiting
-- **💻 Full Terminal Experience**: Xterm.js-based terminal with local assets
-- **⌨️ Smart Input**: Tab completion, command history, and keyboard shortcuts
-- **🎨 Modern UI**: Responsive design with dark/light mode support
-- **⚙️ Configurable**: Extensive configuration options for customization
-- **📱 Responsive**: Works seamlessly on all device sizes
-- **🔧 Preset Commands**: Quick access to common Laravel and system commands
-- **📊 Command Logging**: Optional audit trail for security compliance
+- **Web-based Terminal**: Full terminal experience in your browser
+- **Enhanced Security**: Comprehensive command filtering and rate limiting
+- **Smart Input**: Tab completion, command history, and keyboard shortcuts
+- **Modern UI**: Responsive design with dark/light mode support
+- **Preset Commands**: Quick access to common Laravel and system commands
+- **Command Logging**: Optional audit trail for security compliance
+- **Session Management**: Persistent terminal sessions
+- **Multi-user Support**: Separate terminal sessions for each user
+- **Audit Logging**: Track all terminal activities for security
 
-## 📋 Requirements
+## Installation
+
+### 1. Install via Composer
+
+```bash
+composer require filaforge/shell-terminal
+```
+
+### 2. Publish & Migrate
+
+```bash
+# Publish provider groups (config, views, migrations)
+php artisan vendor:publish --provider="Filaforge\\ShellTerminal\\Providers\\ShellTerminalServiceProvider"
+
+# Run migrations
+php artisan migrate
+```
+
+### 3. Register Plugin
+
+Add the plugin to your Filament panel provider:
+
+```php
+use Filament\Panel;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ... other configuration
+        ->plugin(\Filaforge\ShellTerminal\ShellTerminalPlugin::make());
+}
+```
+
+## Setup
+
+### Prerequisites
+
+Before using this plugin, ensure your system meets these requirements:
 
 - **PHP**: 8.1 or higher
 - **Laravel**: 12.x
 - **Filament**: 4.x (Panel Builder)
 - **Node.js**: 16+ (for asset building)
 
-## 🚀 Installation
+### Configuration
 
-### Via Composer
+The plugin will automatically:
+- Publish configuration files to `config/shell-terminal.php`
+- Publish view files to `resources/views/vendor/shell-terminal/`
+- Publish migration files to `database/migrations/`
+- Register necessary routes and middleware
 
-```bash
-composer require filaforge/shell-terminal
-```
+### Terminal Configuration
 
-### Manual Installation
-
-1. Clone this repository to your `plugins` directory
-2. Install dependencies: `composer install`
-3. Build assets: `npm install && npm run build`
-4. Register the plugin in your panel provider
-
-## ⚙️ Configuration
-
-### Plugin Registration
-
-Add the plugin to your panel provider:
+Configure the shell terminal in the published config file:
 
 ```php
-use Filaforge\ShellTerminal\FilaforgeShellTerminalPlugin;
-
-public function panel(Panel $panel): Panel
-{
-    return $panel
-        ->plugin(FilaforgeShellTerminalPlugin::make());
-}
+// config/shell-terminal.php
+return [
+    'enabled' => env('SHELL_TERMINAL_ENABLED', true),
+    'rate_limit' => env('SHELL_TERMINAL_RATE_LIMIT', 60),
+    'command_timeout' => env('SHELL_TERMINAL_TIMEOUT', 300),
+    'max_history' => env('SHELL_TERMINAL_MAX_HISTORY', 100),
+    'log_commands' => env('SHELL_TERMINAL_LOG_COMMANDS', false),
+    'require_confirmation' => env('SHELL_TERMINAL_REQUIRE_CONFIRMATION', true),
+    'show_welcome_message' => env('SHELL_TERMINAL_SHOW_WELCOME', true),
+    'enable_tab_completion' => env('SHELL_TERMINAL_TAB_COMPLETION', true),
+    'enable_command_history' => env('SHELL_TERMINAL_HISTORY', true),
+    'terminal_height' => env('SHELL_TERMINAL_HEIGHT', 60),
+    'dark_mode' => env('SHELL_TERMINAL_DARK_MODE', true),
+];
 ```
 
 ### Environment Variables
 
+Add these to your `.env` file:
+
 ```env
-# Shell Terminal Configuration
 SHELL_TERMINAL_ENABLED=true
 SHELL_TERMINAL_RATE_LIMIT=60
 SHELL_TERMINAL_TIMEOUT=300
@@ -68,27 +105,21 @@ SHELL_TERMINAL_HEIGHT=60
 SHELL_TERMINAL_DARK_MODE=true
 ```
 
-### Publish Configuration
+## Usage
 
-```bash
-php artisan vendor:publish --tag="shell-terminal-config"
-```
+### Accessing the Shell Terminal
 
-## 🎯 Usage
+1. Navigate to your Filament admin panel
+2. Look for the "Shell Terminal" menu item
+3. Open a new terminal session
 
-### Accessing the Terminal
+### Basic Terminal Operations
 
-1. Navigate to your Filament panel
-2. Look for "Shell Terminal" in the navigation
-3. Click to access the terminal interface
-
-### Basic Commands
-
-- **Enter**: Execute command
-- **Tab**: Auto-completion
-- **↑/↓**: Navigate command history
-- **Ctrl+L**: Clear screen
-- **Ctrl+C**: Cancel current command
+1. **Command Execution**: Type commands and press Enter
+2. **File Navigation**: Use `cd`, `ls`, `pwd` for file operations
+3. **File Management**: Create, edit, and delete files
+4. **Process Control**: Monitor and manage system processes
+5. **System Information**: Get system status and information
 
 ### Preset Commands
 
@@ -102,156 +133,175 @@ The plugin includes categorized preset commands:
 - **Optimization**: Performance tuning
 - **Maintenance**: System maintenance
 
-## 🔒 Security Features
+### Advanced Features
 
-### Command Filtering
+- **Tab Completion**: Use Tab key for command and file completion
+- **Command History**: Access previous commands with arrow keys
+- **Session Persistence**: Terminal sessions persist across page refreshes
+- **Multi-tab Support**: Open multiple terminal tabs
+- **Custom Aliases**: Create and use command aliases
 
-- **Disallowed Commands**: Built-in protection against dangerous commands
+## Troubleshooting
+
+### Common Issues
+
+- **Permission denied**: Ensure the user has appropriate shell access
+- **Command not found**: Check if the command is in the allowed list
+- **Session timeout**: Increase session timeout in configuration
+- **Performance issues**: Check system resources and command complexity
+
+### Debug Steps
+
+1. Check the plugin configuration:
+```bash
+php artisan config:show shell-terminal
+```
+
+2. Verify routes are registered:
+```bash
+php artisan route:list | grep shell-terminal
+```
+
+3. Check user permissions:
+```bash
+# Verify the web server user has shell access
+whoami
+groups
+```
+
+4. Test basic shell functionality:
+```bash
+# Test if basic commands work
+php artisan tinker
+shell_exec('pwd');
+```
+
+5. Clear caches:
+```bash
+php artisan optimize:clear
+```
+
+6. Check logs for errors:
+```bash
+tail -f storage/logs/laravel.log
+```
+
+### Performance Optimization
+
+- **Command caching**: Cache frequently used command results
+- **Session management**: Optimize terminal session handling
+- **Resource monitoring**: Monitor system resources during terminal use
+- **Command queuing**: Implement command queuing for heavy operations
+
+## Security Considerations
+
+### Access Control
+
+- **Role-based permissions**: Restrict terminal access to authorized users only
+- **Command restrictions**: Whitelist allowed commands and block dangerous ones
+- **User isolation**: Ensure users can only access their own terminal sessions
+- **Audit logging**: Track all terminal activities and commands
+
+### Security Features
+
+- **Command Filtering**: Built-in protection against dangerous commands
 - **Pattern Matching**: Blocks shell piping and other risky patterns
 - **Directory Restrictions**: Limits command execution to safe directories
+- **Rate Limiting**: Configurable commands per minute with abuse prevention
 
-### Rate Limiting
+### Best Practices
 
-- **Per-User Limits**: Configurable commands per minute
-- **Abuse Prevention**: Automatic blocking of excessive usage
-- **Configurable Windows**: Adjustable time windows
+- Never expose the terminal to public users
+- Regularly review and update command whitelists
+- Monitor terminal usage and log suspicious activities
+- Implement proper user authentication and authorization
+- Use HTTPS for secure terminal access
+- Regular security audits of terminal usage
 
-### Audit Logging
+## Performance Optimization
 
-- **Command Logging**: Optional logging of all executed commands
-- **User Tracking**: Associate commands with authenticated users
-- **Output Logging**: Configurable output logging for compliance
+### System Requirements
 
-## 🎨 Customization
+- **CPU**: Multi-core processor for better performance
+- **Memory**: Sufficient RAM for terminal sessions
+- **Storage**: Fast storage for command execution
+- **Network**: Stable network for web terminal access
 
-### CSS Variables
+### Optimization Tips
 
-```css
-.ff-shell-terminal {
-    --terminal-bg: #0a0a0c;
-    --terminal-fg: #ffffff;
-    --terminal-cursor: #ffffff;
-    --terminal-selection: #264f78;
-    --terminal-border: #374151;
-}
+- Use command caching for repeated operations
+- Implement session pooling for multiple users
+- Monitor system resources during peak usage
+- Optimize command execution timeouts
+
+## Uninstall
+
+### 1. Remove Plugin Registration
+
+Remove the plugin from your panel provider:
+```php
+// remove ->plugin(\Filaforge\ShellTerminal\ShellTerminalPlugin::make())
 ```
 
-### Configuration Options
-
-- **Terminal Height**: Adjust viewport height
-- **Theme Support**: Dark/light mode switching
-- **Font Settings**: Customize terminal fonts
-- **Color Schemes**: Customize terminal colors
-
-## 🛠️ Development
-
-### Building Assets
+### 2. Roll Back Migrations (Optional)
 
 ```bash
-# Install dependencies
-npm install
-
-# Development build
-npm run dev
-
-# Production build
-npm run build
-
-# Watch for changes
-npm run watch
+php artisan migrate:rollback
+# or roll back specific published files if needed
 ```
 
-### Local Development
-
-1. Clone the repository
-2. Install dependencies: `composer install && npm install`
-3. Link to your Laravel project for testing
-4. Build assets: `npm run build`
-
-## 📁 File Structure
-
-```
-filaforge-shell-terminal/
-├── src/                          # PHP source code
-│   ├── Pages/                    # Filament pages
-│   ├── Providers/                # Service providers
-│   └── FilaforgeShellTerminalPlugin.php
-├── resources/                    # Frontend assets
-│   ├── css/                      # Stylesheets
-│   ├── js/                       # JavaScript
-│   ├── views/                    # Blade templates
-│   └── dist/                     # Compiled assets
-├── config/                       # Configuration files
-├── database/                     # Migrations
-├── bin/                          # Build scripts
-├── composer.json                 # PHP dependencies
-├── package.json                  # Node.js dependencies
-└── README.md                     # This file
-```
-
-## 🔧 Configuration Reference
-
-### General Settings
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `enabled` | `true` | Enable/disable terminal |
-| `rate_limit` | `60` | Commands per minute |
-| `command_timeout` | `300` | Execution timeout (seconds) |
-| `max_history` | `100` | Maximum command history |
-
-### Security Settings
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `log_commands` | `false` | Log executed commands |
-| `require_confirmation` | `true` | Require confirmation |
-| `disallowed_commands` | `[]` | Blocked command list |
-| `allowed_directories` | `[base_path()]` | Safe directories |
-
-### Display Settings
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `show_welcome_message` | `true` | Show welcome message |
-| `enable_tab_completion` | `true` | Enable tab completion |
-| `enable_command_history` | `true` | Enable history navigation |
-| `terminal_height` | `60` | Height in viewport units |
-| `dark_mode` | `true` | Use dark theme |
-
-## 🧪 Testing
+### 3. Remove Published Assets (Optional)
 
 ```bash
-# Run tests
-composer test
-
-# Run with coverage
-composer test -- --coverage
+rm -f config/shell-terminal.php
+rm -rf resources/views/vendor/shell-terminal
 ```
 
-## 📞 Support
+### 4. Remove Package and Clear Caches
 
-- **Documentation**: This README
-- **Issues**: GitHub Issues
-- **Email**: filaforger@gmail.com
+```bash
+composer remove filaforge/shell-terminal
+php artisan optimize:clear
+```
 
-## 🤝 Contributing
+### 5. Clean Up Environment Variables
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+Remove these from your `.env` file:
+```env
+SHELL_TERMINAL_ENABLED=true
+SHELL_TERMINAL_RATE_LIMIT=60
+SHELL_TERMINAL_TIMEOUT=300
+SHELL_TERMINAL_MAX_HISTORY=100
+SHELL_TERMINAL_LOG_COMMANDS=false
+SHELL_TERMINAL_REQUIRE_CONFIRMATION=true
+SHELL_TERMINAL_SHOW_WELCOME=true
+SHELL_TERMINAL_TAB_COMPLETION=true
+SHELL_TERMINAL_HISTORY=true
+SHELL_TERMINAL_HEIGHT=60
+SHELL_TERMINAL_DARK_MODE=true
+```
 
-## 📄 License
+### 6. Security Cleanup
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+After uninstalling, consider:
+- Reviewing system logs for any suspicious activities
+- Updating firewall rules if terminal-specific rules were added
+- Removing any custom shell configurations
+- Updating user permissions and access controls
 
-## 🙏 Acknowledgments
+## Support
 
-- **FilamentPHP Team** for the excellent admin panel framework
-- **Xterm.js** for the terminal emulator
-- **Laravel Community** for the robust PHP framework
+- **Documentation**: [GitHub Repository](https://github.com/filaforge/shell-terminal)
+- **Issues**: [GitHub Issues](https://github.com/filaforge/shell-terminal/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/filaforge/shell-terminal/discussions)
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## License
+
+This plugin is open-sourced software licensed under the [MIT license](LICENSE).
 
 ---
 
