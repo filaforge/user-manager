@@ -1,248 +1,197 @@
-# Filaforge HuggingFace Chat
+# Filaforge Chat AI
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/filaforge/chat-ai.svg?style=flat-square)](https://packagist.org/packages/filaforge/chat-ai)
-[![License](https://img.shields.io/packagist/l/filaforge/chat-ai.svg?style=flat-square)](https://packagist.org/packages/filaforge/chat-ai)
-
-A comprehensive Filament panel plugin for chatting with AI models from multiple providers including HuggingFace, Ollama, and DeepSeek. Features conversation management, model profiles, and user-specific settings.
+A powerful Filament plugin that integrates AI chat capabilities directly into your admin panel.
 
 ## Features
 
-- 🤖 **Multi-Provider Support**: HuggingFace, Ollama, DeepSeek
-- 💬 **Conversation Management**: Save, load, and organize chat history
-- 🎛️ **HF Models**: Pre-configured model settings with easy switching
-- 👤 **User-Specific Settings**: Individual API keys and preferences
-- 📊 **Usage Tracking**: Monitor API usage and rate limits
-- 🎨 **Modern UI**: Clean, responsive interface built with Filament
-- 🔐 **Role-Based Access**: Configurable user permissions
-
-## Screenshots
-
-![Chat Interface](docs/screenshots/chat-interface.png)
-![Settings Page](docs/screenshots/settings-page.png)
-![Model Profiles](docs/screenshots/model-profiles.png)
+- **AI Chat Interface**: Seamless chat experience with AI models
+- **Multiple AI Providers**: Support for various AI services
+- **Conversation History**: Keep track of all your AI conversations
+- **Customizable Prompts**: Create and save custom prompt templates
+- **File Upload Support**: Send files to AI for analysis
+- **Response Export**: Save and share AI responses
+- **Real-time Chat**: Live chat experience with streaming responses
 
 ## Installation
 
-You can install the package via composer:
+### 1. Install via Composer
 
 ```bash
 composer require filaforge/chat-ai
 ```
 
-### Publish & Migrate
+### 2. Publish & Migrate
 
 ```bash
-# Publish configuration (optional)
-php artisan vendor:publish --tag="chat-ai-config"
-
-# Publish provider groups (if any)
+# Publish provider groups (config, views, migrations)
 php artisan vendor:publish --provider="Filaforge\\ChatAi\\Providers\\ChatAiServiceProvider"
 
 # Run migrations
 php artisan migrate
 ```
 
-### Manual Plugin Registration
+### 3. Register Plugin
 
-Register the plugin in your Filament panel provider:
+Add the plugin to your Filament panel provider:
 
 ```php
-use Filaforge\ChatAi\Providers\ChatAiPanelPlugin;
+use Filament\Panel;
 
 public function panel(Panel $panel): Panel
 {
     return $panel
         // ... other configuration
-        ->plugins([
-            ChatAiPanelPlugin::make(),
-        ]);
+        ->plugin(\Filaforge\ChatAi\Providers\ChatAiPanelPlugin::make());
 }
 ```
 
-### Register Multiple Filaforge Plugins (example)
+## Setup
+
+### Configuration
+
+The plugin will automatically:
+- Publish configuration files to `config/chat-ai.php`
+- Publish view files to `resources/views/vendor/chat-ai/`
+- Publish migration files to `database/migrations/`
+- Register necessary routes and middleware
+
+### AI Provider Configuration
+
+Configure your AI provider in the published config file:
 
 ```php
-->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
-->plugin(\Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin::make())
-->plugin(\Filaforge\ChatAi\Providers\ChatAiPanelPlugin::make())
-->plugin(\Filaforge\UserManager\UserManagerPlugin::make())
-->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
-->plugin(\Filaforge\OpensourceChat\OpensourceChatPlugin::make())
-->plugin(\Filaforge\DatabaseViewer\DatabaseViewerPlugin::make())
-->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make())
-->plugin(\Filaforge\SystemPackages\SystemPackagesPlugin::make())
-->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
-->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make())
-->plugin(\Filaforge\SystemMonitor\SystemMonitorPlugin::make())
-->plugin(\Filaforge\HelloWidget\HelloWidgetPlugin::make())
-->plugin(\Filaforge\OllamaChat\Filament\OllamaChatPanelPlugin::make())
-```
-
-### Run Migrations
-
-```bash
-php artisan migrate
-```
-
-## Configuration
-
-Publish and configure the config file:
-
-```bash
-php artisan vendor:publish --tag="chat-ai-config"
+// config/chat-ai.php
+return [
+    'default_provider' => 'openai',
+    'providers' => [
+        'openai' => [
+            'api_key' => env('OPENAI_API_KEY'),
+            'model' => 'gpt-4',
+        ],
+        'anthropic' => [
+            'api_key' => env('ANTHROPIC_API_KEY'),
+            'model' => 'claude-3-sonnet',
+        ],
+    ],
+];
 ```
 
 ### Environment Variables
 
-```bash
-# HuggingFace Configuration
-HF_API_TOKEN=your_chat_ai_token_here
-HF_MODEL_ID=meta-llama/Meta-Llama-3-8B-Instruct
-HF_BASE_URL=https://api-inference.huggingface.co
-HF_STREAM=false
-HF_USE_OPENAI=true
-HF_SYSTEM_PROMPT="You are a helpful assistant."
-HF_TIMEOUT=60
+Add these to your `.env` file:
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
 ```
-
-### HF Models
-
-The plugin automatically seeds common HF models:
-
-- **GPT-OSS 120B (Fireworks)** - OpenAI-compatible endpoint
-- **Llama 3 Latest (Ollama)** - Local Ollama instance
-- **DeepSeek Chat** - DeepSeek API integration
 
 ## Usage
 
-### Basic Chat
+### Accessing the Chat AI
 
-1. Navigate to the **HF Chat** page in your Filament panel
-2. Select a model profile from the dropdown
-3. Start chatting with the AI
+1. Navigate to your Filament admin panel
+2. Look for the "Chat AI" menu item
+3. Start chatting with AI models
 
-### Managing Settings
+### Starting a Conversation
 
-1. Visit **HF Settings** to configure:
-   - Global API tokens
-   - Default model parameters
-   - Request timeouts and streaming options
+1. **Select AI Model**: Choose from available AI providers
+2. **Type Your Message**: Enter your question or prompt
+3. **Send Message**: Submit your message to the AI
+4. **View Response**: See the AI's response in real-time
+5. **Continue Chat**: Keep the conversation going
 
-### HF Models
+### Advanced Features
 
-1. Access **HF Models** from the chat interface
-2. Add, edit, or delete model configurations
-3. Switch between profiles during conversations
-
-### Conversation History
-
-1. All conversations are automatically saved
-2. Access **Conversations** to view chat history
-3. Continue previous conversations or start new ones
-
-## Advanced Configuration
-
-### Role-Based Access
-
-Configure user roles in the config file:
-
-```php
-'allow_roles' => ['admin', 'editor'],
-'admin_roles' => ['admin'],
-```
-
-### Custom Model Providers
-
-Add custom HF models programmatically:
-
-```php
-use Filaforge\ChatAi\Models\ModelProfile;
-
-ModelProfile::create([
-    'name' => 'Custom Model',
-    'provider' => 'custom',
-    'model_id' => 'custom/model-name',
-    'base_url' => 'https://api.custom-provider.com',
-    'api_key' => 'your-api-key',
-    'stream' => true,
-    'timeout' => 120,
-    'system_prompt' => 'Custom system prompt...',
-]);
-```
-
-## API Reference
-
-### Models
-
-- `Conversation` - Chat conversation storage
-- `Setting` - User-specific settings
-- `ModelProfile` - Model configuration profiles
-- `ModelProfileUsage` - Usage tracking and rate limiting
-
-### Pages
-
-- `ChatAiChatPage` - Main chat interface
-- `ChatAiSettingsPage` - Settings management
-- `ChatAiConversationsPage` - Conversation history
-
-## Development
-
-### Code Quality
-
-This plugin follows Laravel and Filament best practices:
-
-- PSR-4 autoloading
-- Type hints and return types
-- Proper error handling
-- Comprehensive testing (coming soon)
-
-### Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE) for more information.
-
-## Credits
-
-- [Filaforge Team](https://github.com/filaforge)
-- [Filament Framework](https://filamentphp.com)
-- [Laravel Framework](https://laravel.com)
+- **File Uploads**: Send documents, images, or other files
+- **Prompt Templates**: Save and reuse common prompts
+- **Conversation Export**: Download chat history
+- **Custom Settings**: Adjust AI parameters and behavior
 
 ## Troubleshooting
 
-### Common Model Not Found Error
+### Common Issues
 
-If you see: `The requested model 'model-name' does not exist`
+- **API key errors**: Verify your API keys are correct and have sufficient credits
+- **Rate limiting**: Check your AI provider's rate limits
+- **Model not available**: Ensure the selected model is available in your plan
+- **File upload issues**: Check file size limits and supported formats
 
-**Quick Fix**: Use these verified working models:
-- `microsoft/DialoGPT-medium`
-- `google/flan-t5-large`  
-- `facebook/blenderbot-400M-distill`
+### Debug Steps
 
-**Detailed Help**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for complete guide.
+1. Check the plugin configuration:
+```bash
+php artisan config:show chat-ai
+```
 
-### API Token Issues
+2. Verify routes are registered:
+```bash
+php artisan route:list | grep chat-ai
+```
 
-1. Get your token: [HuggingFace Settings](https://huggingface.co/settings/tokens)
-2. Set environment variable: `HF_API_TOKEN=your_token_here`
-3. Or save in HF Settings page
+3. Test API connectivity:
+```bash
+php artisan tinker
+# Test your API keys manually
+```
+
+4. Clear caches:
+```bash
+php artisan optimize:clear
+```
+
+5. Check logs for errors:
+```bash
+tail -f storage/logs/laravel.log
+```
+
+## Uninstall
+
+### 1. Remove Plugin Registration
+
+Remove the plugin from your panel provider:
+```php
+// remove ->plugin(\Filaforge\ChatAi\Providers\ChatAiPanelPlugin::make())
+```
+
+### 2. Roll Back Migrations (Optional)
+
+```bash
+php artisan migrate:rollback
+# or roll back specific published files if needed
+```
+
+### 3. Remove Published Assets (Optional)
+
+```bash
+rm -f config/chat-ai.php
+rm -rf resources/views/vendor/chat-ai
+```
+
+### 4. Remove Package and Clear Caches
+
+```bash
+composer remove filaforge/chat-ai
+php artisan optimize:clear
+```
 
 ## Support
 
-- 📧 Email: filaforger@gmail.com
-- 🐛 Issues: [GitHub Issues](https://github.com/filaforge/chat-ai/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/filaforge/chat-ai/discussions)
-- 📖 Troubleshooting: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+- **Documentation**: [GitHub Repository](https://github.com/filaforge/chat-ai)
+- **Issues**: [GitHub Issues](https://github.com/filaforge/chat-ai/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/filaforge/chat-ai/discussions)
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## License
+
+This plugin is open-sourced software licensed under the [MIT license](LICENSE).
+
+---
+
+**Made with ❤️ by the Filaforge Team**
 
 
 
