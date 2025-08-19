@@ -1,168 +1,233 @@
 # Filaforge Database Query
 
-A Filament v4 panel plugin that provides a SQL query explorer page to run read-only queries safely within your panel.
+A powerful Filament plugin that provides a SQL query interface directly in your admin panel for database management and analysis.
 
-![Screenshot](screenshot.png)
+## Features
 
-## Requirements
-- PHP >= 8.1
-- Laravel 12 (illuminate/support ^12)
-- Filament ^4.0
+- **SQL Query Interface**: Write and execute SQL queries directly in Filament
+- **Query Builder**: Visual query builder for complex database operations
+- **Result Export**: Export query results in multiple formats (CSV, JSON, Excel)
+- **Query History**: Save and reuse frequently used queries
+- **Schema Explorer**: Browse database structure and relationships
+- **Query Validation**: Built-in SQL syntax checking and validation
+- **Security**: Role-based access control for database operations
+- **Performance Monitoring**: Track query execution times and performance
 
 ## Installation
 
-### Step 1: Install via Composer
+### 1. Install via Composer
+
 ```bash
 composer require filaforge/database-query
 ```
 
-### Publish (optional)
+### 2. Publish & Migrate
 
 ```bash
+# Publish provider groups (config, views, migrations)
 php artisan vendor:publish --provider="Filaforge\\DatabaseQuery\\Providers\\DatabaseQueryServiceProvider"
+
+# Run migrations
+php artisan migrate
 ```
 
-### Step 2: Service Provider Registration
-The service provider is auto-discovered, so no manual registration is required.
+### 3. Register Plugin
 
-### Step 3: Register the Plugin in Your Panel
-Add the plugin to your Filament panel configuration in `app/Providers/Filament/AdminPanelProvider.php` (or your custom panel provider):
+Add the plugin to your Filament panel provider:
 
 ```php
-<?php
-
-namespace App\Providers\Filament;
-
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
-use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
-use Filament\Widgets;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\AuthenticateSession;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-// Add this import
-use Filaforge\DatabaseQuery\DatabaseQueryPlugin;
-
-class AdminPanelProvider extends PanelProvider
+public function panel(Panel $panel): Panel
 {
-    public function panel(Panel $panel): Panel
-    {
-        return $panel
-            ->default()
-            ->id('admin')
-            ->path('admin')
-            ->login()
-            ->colors([
-                'primary' => Color::Amber,
-            ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
-            ])
-            ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-            ])
-            ->authMiddleware([
-                Authenticate::class,
-            ])
-            // Add the plugin here
-            ->plugin(DatabaseQueryPlugin::make());
-    }
+    return $panel
+        // ... other configuration
+        ->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make());
 }
 ```
 
-### Step 4: Clear Cache and Discover Assets
-```bash
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-```
+## Setup
 
-## Usage
+### Configuration
 
-After installation and registration, you'll find the "Database Query" page in your Filament panel navigation. The page provides:
+The plugin will automatically:
+- Publish configuration files to `config/database-query.php`
+- Publish view files to `resources/views/vendor/database-query/`
+- Publish migration files to `database/migrations/`
+- Register necessary routes and middleware
 
-- **SQL Editor**: Write and execute SQL queries with syntax highlighting
-- **Query History**: Keep track of your recent queries
-- **Results Table**: View query results in a formatted, paginated table
-- **Read-Only Safety**: Designed for safe, read-only database operations
-- **Multiple Connections**: Support for different database connections
+### Database Configuration
 
-Navigate to your Filament panel and look for "Database Query" in the sidebar to start exploring your database.
-
-## Configuration
-
-The plugin works out of the box with your default database connection. You can customize query limitations by publishing the configuration:
-
-```bash
-php artisan vendor:publish --tag="database-query-config"
-```
-
-This will create a `config/database-query.php` file where you can modify allowed operations and security settings.
-
-## Security Notes
-
-- **Read-Only Recommended**: The plugin is designed for safe, read-only operations
-- **Query Validation**: Built-in safeguards to prevent destructive operations
-- **Permission Control**: Integrates with Filament's authorization system
-
-## Features
-
-- ✅ SQL syntax highlighting and formatting
-- ✅ Query history and favorites
-- ✅ Paginated results display
-- ✅ Multiple database connection support
-- ✅ Export results to CSV/Excel
-- ✅ Built-in security safeguards
-- ✅ Responsive design matching Filament's theme
-
----
-
-**Package**: `filaforge/database-query`  
-**License**: MIT  
-**Requirements**: PHP ^8.1, Laravel ^12, Filament ^4.0
-```
-
-## Usage
-Open the “Database Query” page in your panel, enter a read-only SQL query, and execute. Results appear in a table.
-
-## Notes
-- Intentionally limited to safe, read-only operations. Configure any further constraints inside the plugin if needed.
-
----
-Package: `filaforge/database-query`## Filaforge Database Query
-
-Run ad-hoc SQL queries from a Filament page (read-only recommended).
-
-Usage:
+Configure database access in the published config file:
 
 ```php
-->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make())
+// config/database-query.php
+return [
+    'allowed_databases' => ['mysql', 'pgsql', 'sqlite'],
+    'max_query_time' => 300, // 5 minutes
+    'max_results' => 10000,
+    'allowed_operations' => ['SELECT', 'SHOW', 'DESCRIBE'],
+    'admin_only' => false,
+];
 ```
 
-The page appears as "Database Query" in the admin navigation.
+### Environment Variables
+
+Add these to your `.env` file if needed:
+
+```env
+DB_QUERY_ENABLED=true
+DB_QUERY_MAX_TIME=300
+DB_QUERY_MAX_ROWS=10000
+```
+
+## Usage
+
+### Accessing the Database Query Tool
+
+1. Navigate to your Filament admin panel
+2. Look for the "Database Query" menu item
+3. Start writing and executing SQL queries
+
+### Writing Queries
+
+1. **Select Database**: Choose the target database connection
+2. **Write SQL**: Enter your SQL query in the editor
+3. **Validate**: Check syntax before execution
+4. **Execute**: Run the query and view results
+5. **Export**: Download results in your preferred format
+
+### Query Examples
+
+```sql
+-- Basic SELECT query
+SELECT * FROM users WHERE created_at >= '2024-01-01';
+
+-- Complex JOIN query
+SELECT u.name, p.title, c.body 
+FROM users u 
+JOIN posts p ON u.id = p.user_id 
+JOIN comments c ON p.id = c.post_id 
+WHERE u.active = 1;
+
+-- Database schema exploration
+SHOW TABLES;
+DESCRIBE users;
+```
+
+### Advanced Features
+
+- **Query Templates**: Save and reuse common queries
+- **Parameter Binding**: Use prepared statements for security
+- **Result Filtering**: Filter and sort query results
+- **Query Optimization**: Get suggestions for improving query performance
+
+## Troubleshooting
+
+### Common Issues
+
+- **Permission denied**: Ensure the user has database access rights
+- **Query timeout**: Check the max_query_time configuration
+- **Memory limits**: Large result sets may exceed PHP memory limits
+- **Connection issues**: Verify database connection settings
+
+### Debug Steps
+
+1. Check the plugin configuration:
+```bash
+php artisan config:show database-query
+```
+
+2. Verify routes are registered:
+```bash
+php artisan route:list | grep database-query
+```
+
+3. Test database connectivity:
+```bash
+php artisan tinker
+# Test database connection manually
+```
+
+4. Clear caches:
+```bash
+php artisan optimize:clear
+```
+
+5. Check logs for errors:
+```bash
+tail -f storage/logs/laravel.log
+```
+
+### Performance Tips
+
+- Use `LIMIT` clauses for large datasets
+- Add proper indexes to frequently queried columns
+- Avoid `SELECT *` in production queries
+- Use prepared statements for repeated queries
+
+## Security Considerations
+
+### Access Control
+
+- **Role-based permissions**: Restrict access to authorized users only
+- **Query validation**: Whitelist allowed SQL operations
+- **Result limits**: Prevent excessive data exposure
+- **Audit logging**: Track all database operations
+
+### Best Practices
+
+- Never allow `DROP`, `DELETE`, or `UPDATE` operations without proper safeguards
+- Use read-only database users when possible
+- Implement query timeout limits
+- Monitor and log all database activities
+
+## Uninstall
+
+### 1. Remove Plugin Registration
+
+Remove the plugin from your panel provider:
+```php
+// remove ->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make())
+```
+
+### 2. Roll Back Migrations (Optional)
+
+```bash
+php artisan migrate:rollback
+# or roll back specific published files if needed
+```
+
+### 3. Remove Published Assets (Optional)
+
+```bash
+rm -f config/database-query.php
+rm -rf resources/views/vendor/database-query
+```
+
+### 4. Remove Package and Clear Caches
+
+```bash
+composer remove filaforge/database-query
+php artisan optimize:clear
+```
+
+## Support
+
+- **Documentation**: [GitHub Repository](https://github.com/filaforge/database-query)
+- **Issues**: [GitHub Issues](https://github.com/filaforge/database-query/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/filaforge/database-query/discussions)
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## License
+
+This plugin is open-sourced software licensed under the [MIT license](LICENSE).
+
+---
+
+**Made with ❤️ by the Filaforge Team**
 
 
