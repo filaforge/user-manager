@@ -26,6 +26,7 @@ class HfChatServiceProvider extends PackageServiceProvider
 			->hasInstallCommand(function (InstallCommand $command) {
 				$command
 					->publishConfigFile()
+					->publishMigrations()
 					->askToRunMigrations();
 			});
 	}
