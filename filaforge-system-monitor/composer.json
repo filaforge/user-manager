@@ -1,5 +1,6 @@
 {
-    "name": "filaforge/system-monitor",
+    "name": "filaforge/[^"]*",
+  "version": "2.0.1",
     "description": "System monitor plugin widgets for Filament v4",
     "type": "library",
     "license": "MIT",
