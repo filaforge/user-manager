@@ -1,192 +1,299 @@
 # Filaforge System Monitor
 
-A Filament v4## Usage
-
-After installation and registration, the plugin adds several dashboard widgets to your Filament panel:
-
-- **System Monitor Widget**: Real-time CPU, memory, and disk usage
-- **System Info Widget**: Server information and system details
-- **Performance Metrics**: Live monitoring of server performance
-- **Resource Tracking**: Historical resource usage data
-
-The widgets automatically appear on your dashboard and refresh periodically to show current system status.
-
-## Configuration
-
-The plugin works out of the box. You can customize monitoring intervals by publishing the configuration:
-
-```bash
-php artisan vendor:publish --tag="system-monitor-config"
-```
+A powerful Filament plugin that provides comprehensive system monitoring and performance metrics directly in your admin panel.
 
 ## Features
 
-- ✅ Real-time system monitoring
-- ✅ CPU, memory, and disk usage tracking
-- ✅ Multiple dashboard widgets
-- ✅ Automatic refresh capabilities
-- ✅ Server information display
-- ✅ Performance metrics
-
----
-
-**Package**: `filaforge/system-monitor`  
-**License**: MIT  
-**Requirements**: PHP ^8.1, Laravel ^12, Filament ^4.0, symfony/process ^7.0ugin that provides dashboard widgets for real-time system metrics (CPU, memory, disk, etc.).
-
-![Screenshot](screenshot.png)
-
-## Requirements
-- PHP >= 8.1
-- Laravel 12 (illuminate/support ^12)
-- Filament ^4.0
-- symfony/process ^7.0
+- **Real-time Monitoring**: Live system performance metrics and status
+- **Resource Tracking**: Monitor CPU, memory, disk, and network usage
+- **Process Management**: View and manage running processes
+- **Service Status**: Monitor system services and their health
+- **Performance Metrics**: Track system performance over time
+- **Alert System**: Configure notifications for critical thresholds
+- **Dashboard Widgets**: Beautiful monitoring widgets for your dashboard
+- **Historical Data**: Store and analyze performance trends
+- **Multi-server Support**: Monitor multiple servers from one interface
+- **Custom Metrics**: Add custom monitoring metrics and alerts
 
 ## Installation
 
-### Step 1: Install via Composer
+### 1. Install via Composer
+
 ```bash
 composer require filaforge/system-monitor
 ```
 
-### Step 2: Service Provider Registration
-The service provider is auto-discovered, so no manual registration is required.
+### 2. Publish & Migrate
 
-### Publish (optional)
 ```bash
+# Publish provider groups (config, views, migrations)
 php artisan vendor:publish --provider="Filaforge\\SystemMonitor\\Providers\\SystemMonitorServiceProvider"
+
+# Run migrations
+php artisan migrate
 ```
 
-### Step 4: Register the plugin in your panel
+### 3. Register Plugin
+
+Add the plugin to your Filament panel provider:
+
 ```php
-use Filaforge\SystemMonitor\SystemMonitorPlugin;
 use Filament\Panel;
 
 public function panel(Panel $panel): Panel
 {
     return $panel
-        // ...
-        ->plugin(SystemMonitorPlugin::make());
+        // ... other configuration
+        ->plugin(\Filaforge\SystemMonitor\SystemMonitorPlugin::make());
 }
 ```
 
+## Setup
+
+### Prerequisites
+
+Before using this plugin, ensure your system meets these requirements:
+
+- **PHP Extensions**: Required extensions for system monitoring
+- **System Permissions**: Appropriate permissions for system access
+- **Storage**: Sufficient storage for metrics and logs
+
+### Configuration
+
+The plugin will automatically:
+- Publish configuration files to `config/system-monitor.php`
+- Publish view files to `resources/views/vendor/system-monitor/`
+- Publish migration files to `database/migrations/`
+- Register necessary routes and middleware
+
+### Monitor Configuration
+
+Configure the system monitor in the published config file:
+
+```php
+// config/system-monitor.php
+return [
+    'enabled' => env('SYSTEM_MONITOR_ENABLED', true),
+    'update_interval' => env('SYSTEM_MONITOR_UPDATE_INTERVAL', 30),
+    'retention_days' => env('SYSTEM_MONITOR_RETENTION_DAYS', 30),
+    'metrics' => [
+        'cpu' => true,
+        'memory' => true,
+        'disk' => true,
+        'network' => true,
+        'processes' => true,
+        'services' => true,
+    ],
+    'alerts' => [
+        'cpu_threshold' => env('SYSTEM_MONITOR_CPU_THRESHOLD', 80),
+        'memory_threshold' => env('SYSTEM_MONITOR_MEMORY_THRESHOLD', 85),
+        'disk_threshold' => env('SYSTEM_MONITOR_DISK_THRESHOLD', 90),
+    ],
+    'dashboard_widgets' => [
+        'system_status' => true,
+        'resource_usage' => true,
+        'process_list' => true,
+        'service_status' => true,
+    ],
+];
+```
+
+### Environment Variables
+
+Add these to your `.env` file:
+
+```env
+SYSTEM_MONITOR_ENABLED=true
+SYSTEM_MONITOR_UPDATE_INTERVAL=30
+SYSTEM_MONITOR_RETENTION_DAYS=30
+SYSTEM_MONITOR_CPU_THRESHOLD=80
+SYSTEM_MONITOR_MEMORY_THRESHOLD=85
+SYSTEM_MONITOR_DISK_THRESHOLD=90
+```
+
+## Usage
+
+### Accessing the System Monitor
+
+1. Navigate to your Filament admin panel
+2. Look for the "System Monitor" menu item
+3. View system metrics and performance data
+
+### Dashboard Widgets
+
+The plugin provides several dashboard widgets:
+
+- **System Status**: Overall system health and status
+- **Resource Usage**: Real-time CPU, memory, and disk usage
+- **Process List**: Top processes by resource usage
+- **Service Status**: System services and their status
+
+### Monitoring Features
+
+1. **System Overview**: Get a quick overview of system health
+2. **Resource Monitoring**: Track CPU, memory, disk, and network usage
+3. **Process Management**: View and manage running processes
+4. **Service Monitoring**: Monitor system services and their health
+5. **Performance Trends**: Analyze performance over time
+6. **Alert Configuration**: Set up alerts for critical thresholds
+
+### Advanced Features
+
+- **Custom Metrics**: Add custom monitoring metrics
+- **Multi-server Monitoring**: Monitor multiple servers
+- **Performance Analysis**: Analyze performance trends and patterns
+- **Capacity Planning**: Use historical data for capacity planning
+
 ## Troubleshooting
 
-- Publish provider assets/config and clear caches:
+### Common Issues
+
+- **Permission denied**: Ensure the user has appropriate system access
+- **Metrics not updating**: Check update interval and cron jobs
+- **High resource usage**: Monitor the monitor itself for performance impact
+- **Missing data**: Verify data retention settings and storage
+
+### Debug Steps
+
+1. Check the plugin configuration:
 ```bash
-php artisan vendor:publish --provider="Filaforge\\SystemMonitor\\Providers\\SystemMonitorServiceProvider" || true
+php artisan config:show system-monitor
+```
+
+2. Verify routes are registered:
+```bash
+php artisan route:list | grep system-monitor
+```
+
+3. Check system permissions:
+```bash
+# Verify the web server user has system access
+whoami
+groups
+```
+
+4. Test system monitoring:
+```bash
+# Test if basic system commands work
+php artisan tinker
+shell_exec('top -bn1 | head -20');
+```
+
+5. Clear caches:
+```bash
 php artisan optimize:clear
 ```
-- Check logs:
+
+6. Check logs for errors:
 ```bash
 tail -f storage/logs/laravel.log
 ```
 
+### Performance Optimization
+
+- **Update intervals**: Adjust monitoring frequency based on needs
+- **Data retention**: Configure appropriate data retention periods
+- **Resource usage**: Monitor the monitoring system itself
+- **Caching**: Implement caching for frequently accessed metrics
+
+## Security Considerations
+
+### Access Control
+
+- **Role-based permissions**: Restrict monitor access to authorized users only
+- **System access**: Limit system access to necessary monitoring functions
+- **Data privacy**: Ensure sensitive system information is protected
+- **Audit logging**: Track all monitoring activities
+
+### Best Practices
+
+- Never expose system monitoring to public users
+- Regularly review and update access permissions
+- Monitor the monitoring system for security issues
+- Implement proper user authentication and authorization
+- Use HTTPS for secure access
+- Regular security audits of monitoring access
+
+## Performance Optimization
+
+### System Requirements
+
+- **CPU**: Minimal CPU overhead for monitoring
+- **Memory**: Sufficient RAM for metrics storage
+- **Storage**: Fast storage for metrics and logs
+- **Network**: Stable network for multi-server monitoring
+
+### Optimization Tips
+
+- Use appropriate update intervals
+- Implement data retention policies
+- Monitor monitoring system performance
+- Use caching for frequently accessed data
+
 ## Uninstall
 
-1) Remove the panel plugin registration:
+### 1. Remove Plugin Registration
+
+Remove the plugin from your panel provider:
 ```php
-// remove ->plugin(\\Filaforge\\SystemMonitor\\SystemMonitorPlugin::make())
+// remove ->plugin(\Filaforge\SystemMonitor\SystemMonitorPlugin::make())
 ```
-2) Remove the package and clear caches:
+
+### 2. Roll Back Migrations (Optional)
+
+```bash
+php artisan migrate:rollback
+# or roll back specific published files if needed
+```
+
+### 3. Remove Published Assets (Optional)
+
+```bash
+rm -f config/system-monitor.php
+rm -rf resources/views/vendor/system-monitor
+```
+
+### 4. Remove Package and Clear Caches
+
 ```bash
 composer remove filaforge/system-monitor
 php artisan optimize:clear
 ```
 
-## Usage
-Add the plugin to your panel to expose widgets like “System Monitor” and “System Info” on the dashboard.
+### 5. Clean Up Environment Variables
 
----
-Package: `filaforge/system-monitor`## Filaforge System Monitor
-
-Stats overview widgets showing CPU load, memory, and disk usage, plus extra widgets.
-
-### Install
-
-1) Require the package (path repo or Packagist):
-```
-composer require filaforge/system-monitor
+Remove these from your `.env` file:
+```env
+SYSTEM_MONITOR_ENABLED=true
+SYSTEM_MONITOR_UPDATE_INTERVAL=30
+SYSTEM_MONITOR_RETENTION_DAYS=30
+SYSTEM_MONITOR_CPU_THRESHOLD=80
+SYSTEM_MONITOR_MEMORY_THRESHOLD=85
+SYSTEM_MONITOR_DISK_THRESHOLD=90
 ```
 
-2) (Optional) Publish config and views:
-```
-php artisan vendor:publish --provider="Filaforge\SystemMonitor\Providers\SystemMonitorServiceProvider" --tag=config
-php artisan vendor:publish --provider="Filaforge\SystemMonitor\Providers\SystemMonitorServiceProvider" --tag=views
-```
-This publishes `config/filaforge-system-monitor.php`.
+### 6. Clean Up Monitoring Data
 
-3) Register the plugin on your panel:
-```php
-use Filaforge\SystemMonitor\SystemMonitorPlugin;
+After uninstalling, consider:
+- Removing stored metrics and logs
+- Cleaning up any cron jobs or scheduled tasks
+- Removing any custom monitoring configurations
+- Updating system access permissions
 
-return $panel
-    // ...
-    ->plugin(SystemMonitorPlugin::make());
-```
+## Support
 
-If your project also calls `$panel->widgets([...])` elsewhere, ensure you include the widgets in that single call or place it before/after the plugin without overriding:
-```php
-->widgets([
-    \Filaforge\SystemMonitor\Widgets\SystemMonitorWidget::class,
-    \Filaforge\SystemMonitor\Widgets\SystemInfoWidget::class,
-    \Filaforge\SystemMonitor\Widgets\SystemProcessesWidget::class,
-])
-```
-
-### Route
-`/filaforge-system-monitor/metrics` (auth)
-
-### Config
-`config/filaforge-system-monitor.php`
-
-Widgets are added to your panel automatically by the plugin.
-
-## Configuration
-
-Edit `config/filaforge-system-monitor.php`:
-
-```php
-return [
-    'refresh_interval_seconds' => env('FILAFORGE_SYSTEM_MONITOR_INTERVAL', 5),
-    'top_processes' => 5,
-    'allow_roles' => ['admin'],
-    'enable_shell_commands' => true,
-    'restricted_ips' => [],
-];
-```
-
-## Permissions
-
-By default, only authenticated users can view the widgets. Customize access control by overriding the `canView()` method in each widget class.
-
-## Requirements
-
-- PHP 8.1+
-- Laravel 12.0+
-- Filament 4.0+
-- Linux/Unix system (for full functionality)
-
-## Design Philosophy
-
-This plugin follows Filament v4 design patterns:
-- Uses native Filament components and styling
-- Consistent with built-in widget designs
-- Mobile-responsive layouts
-- Proper dark mode support
-- Accessible color schemes
-
-## Screenshots
-
-The widgets integrate seamlessly with your existing Filament dashboard, showing:
-- Real-time system metrics in beautiful stat cards
-- Clean system information display
-- Professional process monitoring table
+- **Documentation**: [GitHub Repository](https://github.com/filaforge/system-monitor)
+- **Issues**: [GitHub Issues](https://github.com/filaforge/system-monitor/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/filaforge/system-monitor/discussions)
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 ## License
 
 This plugin is open-sourced software licensed under the [MIT license](LICENSE).
+
+---
+
+**Made with ❤️ by the Filaforge Team**
