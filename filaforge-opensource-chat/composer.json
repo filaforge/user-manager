@@ -1,5 +1,6 @@
 {
-    "name": "filaforge/opensource-chat",
+    "name": "filaforge/[^"]*",
+  "version": "2.0.1",
     "description": "Open Source Chat management plugin for FilamentPHP with model profiles, user settings, and conversations CRUD pages.",
     "type": "library",
     "license": "MIT",
