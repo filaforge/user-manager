@@ -1,213 +1,253 @@
 # Filaforge Database Tools
 
-A comprehensive FilamentPHP plugin that combines database viewing and query building capabilities in a single, user-friendly interface. This plugin merges the functionality of database viewer and query builder into one cohesive tool.
+A comprehensive Filament plugin that provides essential database management tools directly in your admin panel.
 
-## ✨ Features
+## Features
 
-- **🔍 Database Viewer**: Browse database tables and view their contents with pagination
-- **⚡ Query Builder**: Execute custom SQL queries with real-time results
-- **🔄 Toggle Interface**: Switch between viewer and query modes with intuitive header buttons
-- **🎨 Responsive Design**: Works seamlessly on all device sizes
-- **🌙 Dark Mode Support**: Full compatibility with Filament's dark mode
-- **🔒 Security**: Only SELECT queries allowed for safety
-- **📊 Preset Queries**: Common database operations available as presets
-- **📱 Modern UI**: Built with Filament's latest design patterns
+- **Database Backup**: Create and manage database backups
+- **Schema Management**: View and modify database structure
+- **Data Import/Export**: Bulk data operations with multiple formats
+- **Query Optimization**: Analyze and optimize database queries
+- **Table Management**: Create, modify, and drop database tables
+- **Index Management**: Manage database indexes for performance
+- **User Management**: Database user and permission management
+- **Monitoring**: Real-time database performance monitoring
+- **Migration Tools**: Advanced migration management utilities
 
-## 🚀 Installation
+## Installation
 
-### Quick Install (Recommended)
+### 1. Install via Composer
 
 ```bash
-# Install via Composer
 composer require filaforge/database-tools
-
-# Register in your panel provider
-# Add this line to your panel configuration:
-->plugin(FilaforgeDatabaseToolsPlugin::make())
 ```
 
-### Manual Installation
+### 2. Publish & Migrate
 
-1. Clone this repository to your `plugins` directory
-2. Add the service provider to your `composer.json`:
+```bash
+# Publish provider groups (config, views, migrations)
+php artisan vendor:publish --provider="Filaforge\\DatabaseTools\\Providers\\DatabaseToolsServiceProvider"
 
-```json
-"extra": {
-    "laravel": {
-        "providers": [
-            "Filaforge\\DatabaseTools\\FilaforgeDatabaseToolsServiceProvider"
-        ]
-    }
-}
+# Run migrations
+php artisan migrate
 ```
 
-### 📖 Detailed Installation Guide
+### 3. Register Plugin
 
-For comprehensive installation instructions, troubleshooting, and configuration options, see [INSTALLATION.md](INSTALLATION.md).
-
-## 📖 Usage
-
-### 1. Register the Plugin
-
-In your panel provider:
+Add the plugin to your Filament panel provider:
 
 ```php
-use Filaforge\DatabaseTools\FilaforgeDatabaseToolsPlugin;
+use Filament\Panel;
 
 public function panel(Panel $panel): Panel
 {
     return $panel
-        ->plugin(FilaforgeDatabaseToolsPlugin::make());
+        // ... other configuration
+        ->plugin(\Filaforge\DatabaseTools\DatabaseToolsPlugin::make());
 }
 ```
 
-### 2. Access the Tools
+## Setup
 
-Navigate to the "Database Tools" page in your Filament panel. You'll see two main sections:
+### Configuration
 
-#### Database Viewer
-- Select database connection
-- Browse available tables
-- View table data with pagination
-- Sort and filter data
+The plugin will automatically:
+- Publish configuration files to `config/database-tools.php`
+- Publish view files to `resources/views/vendor/database-tools/`
+- Publish migration files to `database/migrations/`
+- Register necessary routes and middleware
 
-#### Query Builder
-- Execute custom SQL queries
-- Use preset queries for common operations
-- View results in formatted tables
-- Error handling and validation
+### Database Configuration
 
-### 3. Toggle Between Modes
+Configure database tools in the published config file:
 
-Use the header buttons to switch between viewer and query modes:
-- **Blue button** indicates the active mode
-- **Gray buttons** are available for switching
+```php
+// config/database-tools.php
+return [
+    'backup' => [
+        'enabled' => true,
+        'path' => storage_path('backups/database'),
+        'retention_days' => 30,
+    ],
+    'import' => [
+        'max_file_size' => '10MB',
+        'allowed_extensions' => ['csv', 'xlsx', 'json'],
+    ],
+    'export' => [
+        'chunk_size' => 1000,
+        'timeout' => 300,
+    ],
+    'permissions' => [
+        'admin_only' => true,
+        'allowed_roles' => ['admin', 'database_manager'],
+    ],
+];
+```
 
-## ⚙️ Configuration
+### Environment Variables
 
-The plugin automatically detects your database connections and tables. No additional configuration is required.
+Add these to your `.env` file if needed:
 
-### Database Connections
+```env
+DB_TOOLS_BACKUP_ENABLED=true
+DB_TOOLS_BACKUP_PATH=storage/backups/database
+DB_TOOLS_MAX_FILE_SIZE=10MB
+```
 
-The plugin will automatically detect all configured database connections from your `config/database.php` file.
+## Usage
 
-### Security Settings
+### Accessing Database Tools
 
-- Only SELECT queries are allowed for security
-- Results are limited to prevent performance issues
-- Database connection validation
+1. Navigate to your Filament admin panel
+2. Look for the "Database Tools" menu item
+3. Choose the tool you want to use
 
-## 🛡️ Security Considerations
+### Database Backup
 
-⚠️ **Important**: This plugin provides direct database access. Ensure proper user permissions and authentication are in place before use in production environments.
+1. **Create Backup**: Generate a new database backup
+2. **Schedule Backups**: Set up automatic backup schedules
+3. **Download Backups**: Download backup files locally
+4. **Restore Backups**: Restore from previous backups
+5. **Manage Retention**: Configure backup retention policies
 
-### Recommended Security Measures
+### Schema Management
 
-1. **User Authentication**: Ensure only authorized users can access the plugin
-2. **Database Permissions**: Limit database user permissions to read-only access
-3. **Environment Restrictions**: Consider disabling in production or limiting to specific user roles
-4. **Query Logging**: Monitor and log all database queries for audit purposes
+1. **View Tables**: Browse all database tables and their structure
+2. **Modify Schema**: Add, modify, or remove columns
+3. **Create Tables**: Build new tables with custom schemas
+4. **Drop Tables**: Safely remove unused tables
+5. **View Relationships**: Explore table relationships and foreign keys
 
-## 📋 Requirements
+### Data Import/Export
 
-- **PHP**: 8.1 or higher
-- **Laravel**: 12.x
-- **Filament**: 4.x
-- **Database**: MySQL/MariaDB, PostgreSQL, SQLite, SQL Server
+1. **Import Data**: Upload CSV, Excel, or JSON files
+2. **Export Data**: Download table data in various formats
+3. **Bulk Operations**: Perform operations on large datasets
+4. **Data Validation**: Validate imported data before insertion
+5. **Error Handling**: Manage import/export errors gracefully
 
-## 🧪 Testing
+### Query Optimization
+
+1. **Query Analysis**: Analyze slow queries and bottlenecks
+2. **Index Suggestions**: Get recommendations for new indexes
+3. **Performance Monitoring**: Track query execution times
+4. **Query History**: Review and optimize previous queries
+
+## Troubleshooting
+
+### Common Issues
+
+- **Permission denied**: Ensure the user has database management rights
+- **Backup failures**: Check disk space and write permissions
+- **Import timeouts**: Adjust chunk size and timeout settings
+- **Memory limits**: Large operations may exceed PHP memory limits
+
+### Debug Steps
+
+1. Check the plugin configuration:
+```bash
+php artisan config:show database-tools
+```
+
+2. Verify routes are registered:
+```bash
+php artisan route:list | grep database-tools
+```
+
+3. Test database connectivity:
+```bash
+php artisan tinker
+# Test database connection manually
+```
+
+4. Check backup directory permissions:
+```bash
+ls -la storage/backups/database
+```
+
+5. Clear caches:
+```bash
+php artisan optimize:clear
+```
+
+6. Check logs for errors:
+```bash
+tail -f storage/logs/laravel.log
+```
+
+### Performance Optimization
+
+- Use smaller chunk sizes for large imports
+- Schedule backups during low-traffic periods
+- Monitor disk space for backup storage
+- Use appropriate indexes for frequently queried columns
+
+## Security Considerations
+
+### Access Control
+
+- **Role-based permissions**: Restrict access to authorized users only
+- **Database privileges**: Use dedicated database users with limited permissions
+- **Audit logging**: Track all database operations and changes
+- **Backup security**: Secure backup files and access
+
+### Best Practices
+
+- Never expose database tools to public users
+- Regularly review and update user permissions
+- Encrypt sensitive backup files
+- Monitor and log all database changes
+- Use read-only database users when possible
+
+## Uninstall
+
+### 1. Remove Plugin Registration
+
+Remove the plugin from your panel provider:
+```php
+// remove ->plugin(\Filaforge\DatabaseTools\DatabaseToolsPlugin::make())
+```
+
+### 2. Roll Back Migrations (Optional)
 
 ```bash
-# Run tests
-composer test
-
-# Run with coverage
-composer test -- --coverage
+php artisan migrate:rollback
+# or roll back specific published files if needed
 ```
 
-## 🔧 Development
-
-### Local Development
-
-1. Clone the repository
-2. Install dependencies: `composer install`
-3. Link to your Laravel project for testing
-
-### Building Assets
+### 3. Remove Published Assets (Optional)
 
 ```bash
-# Install Node.js dependencies
-npm install
-
-# Build CSS
-npm run build
+rm -f config/database-tools.php
+rm -rf resources/views/vendor/database-tools
 ```
 
-## 📁 File Structure
+### 4. Remove Package and Clear Caches
 
-```
-filaforge-database-tools/
-├── src/
-│   ├── FilaforgeDatabaseToolsServiceProvider.php
-│   ├── FilaforgeDatabaseToolsPlugin.php
-│   └── Pages/
-│       └── DatabaseTools.php
-├── resources/
-│   ├── views/
-│   │   └── pages/
-│   │       ├── database-tools.blade.php
-│   │       ├── database-viewer.blade.php
-│   │       └── database-query.blade.php
-│   ├── lang/
-│   │   └── en/
-│   │       └── database-tools.php
-│   └── css/
-│       └── database-tools.css
-├── composer.json
-├── README.md
-└── CHANGELOG.md
+```bash
+composer remove filaforge/database-tools
+php artisan optimize:clear
 ```
 
-## 🤝 Contributing
+### 5. Clean Up Backups (Optional)
+
+```bash
+rm -rf storage/backups/database
+```
+
+## Support
+
+- **Documentation**: [GitHub Repository](https://github.com/filaforge/database-tools)
+- **Issues**: [GitHub Issues](https://github.com/filaforge/database-tools/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/filaforge/database-tools/discussions)
+
+## Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-## 📝 Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for a complete list of changes.
-
-## 🐛 Bug Reports
-
-If you find a bug, please report it using the [GitHub issue tracker](https://github.com/filaforge/database-tools/issues).
-
-## 💡 Feature Requests
-
-Have an idea for a new feature? We'd love to hear it! Please create an issue or submit a pull request.
-
-## 📄 License
+## License
 
 This plugin is open-sourced software licensed under the [MIT license](LICENSE).
-
-## 🙏 Acknowledgments
-
-- [FilamentPHP](https://filamentphp.com/) for the amazing admin panel framework
-- [Laravel](https://laravel.com/) for the robust PHP framework
-- [Spatie](https://spatie.be/) for the excellent package tools
-
-## 📞 Support
-
-- **Email**: filaforger@gmail.com
-- **Issues**: [GitHub Issues](https://github.com/filaforge/database-tools/issues)
-- **Source**: [GitHub Repository](https://github.com/filaforge/database-tools)
-- **Documentation**: [GitHub Wiki](https://github.com/filaforge/database-tools/wiki)
 
 ---
 
