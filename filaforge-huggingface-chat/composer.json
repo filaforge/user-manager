@@ -15,7 +15,7 @@
     "Machine Learning",
     "Filament Plugin"
   ],
-  "homepage": "https://github.com/filaforge/huggingface-chat",
+  "homepage": "https://github.com/filaforge/filaforge-huggingface-chat",
   "authors": [
     {
       "name": "Filaforge Team",
@@ -25,9 +25,9 @@
   ],
   "support": {
     "email": "filaforger@gmail.com",
-    "source": "https://github.com/filaforge/huggingface-chat",
-    "issues": "https://github.com/filaforge/huggingface-chat/issues",
-    "docs": "https://github.com/filaforge/huggingface-chat/blob/main/README.md"
+    "source": "https://github.com/filaforge/filaforge-huggingface-chat",
+    "issues": "https://github.com/filaforge/filaforge-huggingface-chat/issues",
+    "docs": "https://github.com/filaforge/filaforge-huggingface-chat/blob/main/README.md"
   },
   "require": {
     "php": "^8.1",
