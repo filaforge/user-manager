@@ -11,6 +11,7 @@ return new class extends Migration {
 			$table->id();
 			$table->foreignId('user_id')->constrained()->cascadeOnDelete();
 			$table->string('title')->nullable();
+			$table->string('model')->nullable();
 			$table->json('messages');
 			$table->timestamps();
 		});
