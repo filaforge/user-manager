@@ -66,23 +66,28 @@ public function panel(Panel $panel): Panel
 }
 ```
 
-### Register Multiple Filaforge Plugins (example)
+## Troubleshooting
 
+- Publish provider (if assets/config available) and clear caches:
+```bash
+php artisan vendor:publish --provider="Filaforge\\SystemPackages\\Providers\\SystemPackagesServiceProvider" || true
+php artisan optimize:clear
+```
+- Check logs for errors:
+```bash
+tail -f storage/logs/laravel.log
+```
+
+## Uninstall
+
+1) Remove the panel plugin registration:
 ```php
-->plugin(\Filaforge\DeepseekChat\Providers\DeepseekChatPanelPlugin::make())
-->plugin(\Filaforge\HuggingfaceChat\Providers\HfChatPanelPlugin::make())
-->plugin(\Filaforge\ChatAi\Providers\ChatAiPanelPlugin::make())
-->plugin(\Filaforge\UserManager\UserManagerPlugin::make())
-->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
-->plugin(\Filaforge\OpensourceChat\OpensourceChatPlugin::make())
-->plugin(\Filaforge\DatabaseViewer\DatabaseViewerPlugin::make())
-->plugin(\Filaforge\DatabaseQuery\DatabaseQueryPlugin::make())
-->plugin(\Filaforge\SystemPackages\SystemPackagesPlugin::make())
-->plugin(\Filaforge\TerminalConsole\TerminalConsolePlugin::make())
-->plugin(\Filaforge\ApiExplorer\ApiExplorerPlugin::make())
-->plugin(\Filaforge\SystemMonitor\SystemMonitorPlugin::make())
-->plugin(\Filaforge\HelloWidget\HelloWidgetPlugin::make())
-->plugin(\Filaforge\OllamaChat\Filament\OllamaChatPanelPlugin::make())
+// remove ->plugin(\\Filaforge\\SystemPackages\\SystemPackagesPlugin::make())
+```
+2) Remove the package and clear caches:
+```bash
+composer remove filaforge/system-packages
+php artisan optimize:clear
 ```
 
 ## Usage
