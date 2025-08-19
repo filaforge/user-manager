@@ -1,5 +1,6 @@
 {
-    "name": "filaforge/shell-terminal",
+    "name": "filaforge/[^"]*",
+  "version": "2.0.1",
     "description": "A powerful shell terminal plugin for FilamentPHP with local assets and enhanced security",
     "type": "library",
     "license": "MIT",
